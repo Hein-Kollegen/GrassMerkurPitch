@@ -1,5 +1,12 @@
-﻿import "./globals.css";
+import "./globals.css";
 import type { Metadata } from "next";
+import { Raleway } from "next/font/google";
+
+const raleway = Raleway({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["300", "400", "800"]
+});
 
 export const metadata: Metadata = {
   title: "Grass Merkur Pitch",
@@ -13,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="de">
-      <body>{children}</body>
+      <body className={`${raleway.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

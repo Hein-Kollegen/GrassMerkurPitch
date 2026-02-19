@@ -1,11 +1,107 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   color-scheme: light;
+  --color-white: #ffffff;
+  --color-gold: #dbc18d;
+  --color-midnight: #080716;
+  --color-deepsea: #092b42;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  @apply bg-white text-black antialiased;
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+body {
+  background-color: var(--color-midnight);
+  color: var(--color-white);
+  @apply antialiased;
+  font-family: var(--font-body), sans-serif;
+}
+
+h1,
+h2,
+h3,
+p {
+  color: var(--color-white);
+}
+
+h1 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(3.1rem, 6vw, 5.625rem);
+  line-height: 1.05;
+}
+
+h2 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(2.4rem, 4.8vw, 4.25rem);
+  line-height: 1.1;
+}
+
+h3 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  font-size: clamp(1.2rem, 2.2vw, 1.875rem);
+  line-height: 1.2;
+}
+
+p {
+  font-family: var(--font-body), sans-serif;
+  font-weight: 400;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  line-height: 1.7;
 }

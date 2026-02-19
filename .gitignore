@@ -1,4 +1,6 @@
-﻿.next
+.next
 node_modules
 .vercel
 .DS_Store
+devserver.log
+.agents
