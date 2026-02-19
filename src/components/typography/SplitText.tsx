@@ -25,7 +25,7 @@ export default function SplitText({
           className={childClassName}
           data-split-child
         >
-          {part}
+          {split === "chars" && part === " " ? "\u00A0" : part}
           {split === "words" && index < parts.length - 1 ? " " : ""}
         </span>
       ))}
