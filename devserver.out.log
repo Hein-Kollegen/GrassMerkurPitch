@@ -1,0 +1,49 @@
+
+> grass-merkur-pitch@0.1.0 dev
+> node ./node_modules/next/dist/bin/next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.160.1:3000
+
+✓ Starting...
+✓ Ready in 1609ms
+ GET / 200 in 809ms (compile: 492ms, render: 317ms)
+ GET / 200 in 359ms (compile: 19ms, render: 339ms)
+✓ Compiled in 1244ms
+ GET / 200 in 520ms (compile: 106ms, render: 414ms)
+✓ Compiled in 146ms
+✓ Compiled in 44ms
+✓ Compiled in 71ms
+✓ Compiled in 48ms
+✓ Compiled in 34ms
+✓ Compiled in 214ms
+✓ Compiled in 27ms
+ GET / 200 in 460ms (compile: 189ms, render: 271ms)
+ GET / 200 in 257ms (compile: 6ms, render: 251ms)
+✓ Compiled in 43ms
+✓ Compiled in 41ms
+✓ Compiled in 28ms
+✓ Compiled in 125ms
+ GET / 200 in 446ms (compile: 128ms, render: 317ms)
+✓ Compiled in 122ms
+✓ Compiled in 59ms
+✓ Compiled in 67ms
+✓ Compiled in 61ms
+✓ Compiled in 72ms
+✓ Compiled in 70ms
+✓ Compiled in 68ms
+✓ Compiled in 64ms
+✓ Compiled in 55ms
+✓ Compiled in 57ms
+✓ Compiled in 68ms
+✓ Compiled in 57ms
+✓ Compiled in 61ms
+✓ Compiled in 48ms
+✓ Compiled in 30ms
+✓ Compiled in 61ms
+✓ Compiled in 38ms
+✓ Compiled in 48ms
+✓ Compiled in 139ms
+✓ Compiled in 67ms
+✓ Compiled in 58ms

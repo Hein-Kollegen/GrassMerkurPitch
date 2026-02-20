@@ -71,20 +71,22 @@ export default function HomePage() {
           <div className="hero-bg-mask" />
         </div>
 
-        <div className="relative z-10 flex w-full justify-center pt-4 sm:pt-6">
-          <img
-            src="/assets/hero/hk-logo.svg"
-            alt="Hein & Kollegen"
-            className="h-[40px] w-auto"
-          />
-        </div>
+        <div className="content-wrap relative z-10 flex flex-1 flex-col">
+          <div className="flex w-full justify-center pt-4 sm:pt-6">
+            <img
+              src="/assets/hero/hk-logo.svg"
+              alt="Hein & Kollegen"
+              className="h-[40px] w-auto"
+            />
+          </div>
 
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center">
-          <div className="flex flex-col items-center gap-8 text-center">
-            <HeroTypedTitle />
-            <p className="m-0 max-w-2xl text-[clamp(1rem,1.2vw,1.25rem)] wrap-balance font-medium text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] [font-family:var(--font-display)]">
-              {"Ein System f\u00fcr Wachstum, Umsatz, Mitarbeitergewinnung und Planbarkeit f\u00fcr Grass-Merkur."}
-            </p>
+          <div className="flex flex-1 flex-col items-center justify-center text-center">
+            <div className="flex flex-col items-center gap-8 text-center">
+              <HeroTypedTitle />
+              <p className="m-0 max-w-2xl text-[clamp(1rem,1.2vw,1.25rem)] wrap-balance font-medium text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] [font-family:var(--font-display)]">
+                {"Ein System f\u00fcr Wachstum, Umsatz, Mitarbeitergewinnung und Planbarkeit f\u00fcr Grass-Merkur."}
+              </p>
+            </div>
           </div>
         </div>
       </section>

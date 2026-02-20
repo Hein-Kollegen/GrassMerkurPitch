@@ -1,6 +1,7 @@
 ﻿@import "tailwindcss";
 
 @layer base {
+
   *,
   *::before,
   *::after {
@@ -33,7 +34,11 @@
     text-transform: uppercase;
     font-size: clamp(3.1rem, 6vw, 5.625rem);
     font-weight: 800;
-    line-height: 1.05;
+    line-height: 1.1;
+  }
+
+  h2 {
+    line-height: 1.1;
   }
 
   p {
@@ -93,7 +98,34 @@ body {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
+}
+
+@layer utilities {
+  .content-wrap {
+    @apply w-full max-w-[1280px] mx-auto;
+  }
+}
+
+.tabs-glow {
+  position: relative;
+  isolation: isolate;
+  z-index: 0;
+}
+
+.tabs-glow::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 100%;
+  left: 50%;
+  width: 100vw;
+  height: 600px;
+  transform: translate(-50%, 10%);
+  background: radial-gradient(circle at 50% 50%, rgba(219, 193, 141, 0.8) 0%, rgba(0, 0, 0, 0.2) 100%);
+  filter: blur(50px);
+  pointer-events: none;
 }

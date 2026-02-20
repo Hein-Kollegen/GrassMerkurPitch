@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 const rows = [
   [
@@ -31,12 +31,13 @@ const rows = [
 export default function PartnersSection() {
   return (
     <section className="min-h-[100svh] bg-midnight px-6 py-16 sm:px-10 lg:px-16 flex items-center justify-center">
-      <div className="mx-auto flex h-full w-full max-w-6xl items-center justify-center">
-        <div
-          className="flex w-full flex-col items-center justify-center gap-16"
-        >
+      <div className="content-wrap flex h-full items-center justify-center">
+        <div className="flex w-full flex-col items-center justify-center gap-16">
           {rows.map((row, rowIndex) => (
-            <div key={`row-${rowIndex}`} className="flex w-full flex-row flex-nowrap items-center justify-between gap-16">
+            <div
+              key={`row-${rowIndex}`}
+              className="flex w-full flex-row flex-nowrap items-center justify-between gap-16"
+            >
               {row.map((logo) => (
                 <div key={logo.name} className="flex flex-1 items-center justify-center">
                   <div className="relative h-10 w-[180px] opacity-85">
