@@ -28,8 +28,8 @@ const works = [
 
 export default function WorksSection() {
   return (
-    <section className="w-full px-4 py-16 sm:px-6 lg:px-10">
-      <div className="content-wrap flex flex-col items-center gap-3 text-center">
+    <section className="flex w-full flex-col gap-16 px-4 py-16 sm:px-6 lg:px-10 mt-64">
+      <div className="content-wrap flex flex-col items-center gap-2 text-center">
         <h2>IDEEN, DIE ZEIGEN, WIE WIR DENKEN</h2>
         <h3>STRUKTUR STATT SHOW. INSPIRATIONEN AUS UNSERER CREW.</h3>
       </div>

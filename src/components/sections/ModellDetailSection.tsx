@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import type { TouchEvent, WheelEvent } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -102,6 +103,25 @@ export default function ModellDetailSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const stackRef = useRef<HTMLDivElement | null>(null);
 
+  const handleListWheel = (event: WheelEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const canScroll = target.scrollHeight > target.clientHeight;
+    if (!canScroll) return;
+    const atTop = target.scrollTop <= 0;
+    const atBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1;
+    if ((event.deltaY < 0 && !atTop) || (event.deltaY > 0 && !atBottom)) {
+      event.stopPropagation();
+    }
+  };
+
+  const handleListTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
+    const canScroll = target.scrollHeight > target.clientHeight;
+    if (canScroll) {
+      event.stopPropagation();
+    }
+  };
+
   useLayoutEffect(() => {
     if (!sectionRef.current || !stackRef.current) return;
 
@@ -146,7 +166,7 @@ export default function ModellDetailSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16">
+    <section ref={sectionRef} className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
       <div className="content-wrap flex flex-col items-center gap-6 text-center">
         <h2 className="text-wrap-balance">DIE 5-S-MODULE IM DETAIL</h2>
         <h3 className="text-wrap-balance font-semibold">5 MODULE FUER SICHERES WACHSTUM</h3>
@@ -161,7 +181,7 @@ export default function ModellDetailSection() {
             <div
               key={slide.title}
               data-slide
-              className="absolute left-1/2 top-1/2 h-[80vh] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[20px] border border-[#37515F] bg-[#080716]"
+              className="absolute left-1/2 top-1/2 h-[90vh] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[20px] border border-[#37515F] bg-[#080716]"
               style={
                 slide.mediaType === "bg"
                   ? {
@@ -209,7 +229,11 @@ export default function ModellDetailSection() {
                         </h4>
                         <p className="text-left text-[#DBC18D]">{slide.body}</p>
                       </div>
-                      <div className="slide-list-scroll mt-6 max-h-[220px] overflow-y-auto overflow-x-hidden pr-2 flex flex-col gap-4">
+                      <div
+                        className="slide-list-scroll mt-6 flex max-h-[220px] flex-col gap-4 overflow-y-auto overflow-x-hidden overscroll-contain pr-2"
+                        onWheel={handleListWheel}
+                        onTouchMove={handleListTouchMove}
+                      >
                         {slide.list.map((entry) => (
                           <div key={entry} className="flex flex-nowrap items-center gap-4">
                             <span className="flex h-[41px] w-[41px] flex-none items-center justify-center rounded-full border border-[#DBC18D42]">

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
@@ -7,19 +8,22 @@ const testimonials = [
     quote:
       "\"Martin, Dein Team macht einen wahnsinnig guten Job - super, super, super Job.\"",
     name: "Angelika Hamburger",
-    role: "Director Human Resources, Daimler Truck"
+    role: "Director Human Resources, Daimler Truck",
+    logo: "/assets/sections/testimonials/logo-daimler.png"
   },
   {
     quote:
-      "\"Selten so eine klare und strukturierte Zusammenarbeit erlebt. Absolute Empfehlung.\"",
-    name: "Maximilian Koch",
-    role: "CEO, Mittelstand GmbH"
+      "\"Hein & Kollegen sind die Pragmatiker fuer den Mittelstand.\"",
+    name: "brandeins",
+    role: "Die besten Unternehmensberater 2024",
+    logo: "/assets/sections/testimonials/logo-brandeins.png"
   },
   {
     quote:
-      "\"Die Ergebnisse waren messbar und nachhaltig. Danke fuer die starke Begleitung.\"",
-    name: "Sabrina Voigt",
-    role: "Head of Marketing, Tech Group"
+      "\"Hein & Kollegen - fuer mich das Schweizer Taschenmesser\nim Marketing!\"",
+    name: "Matthias Bianchi",
+    role: "Leiter Public Affairs, Deutscher Mittelstands-Bund",
+    logo: "/assets/sections/testimonials/logo-dmb.png"
   }
 ];
 
@@ -39,7 +43,7 @@ export default function TestimonialSlider() {
     const id = setInterval(() => {
       setDirection("next");
       setActiveIndex((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
+    }, 9000);
 
     return () => clearInterval(id);
   }, [hasInteracted]);
@@ -72,16 +76,16 @@ export default function TestimonialSlider() {
   };
 
   return (
-    <section className="flex w-full justify-center px-6 py-16 sm:px-10 lg:px-16">
-      <div className="content-wrap flex flex-col items-center gap-10 text-center">
+    <section className="flex min-h-[100svh] w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
+      <div className="content-wrap flex flex-col items-center gap-20 text-center">
         <h2>KUNDENSTIMMEN</h2>
 
         <div
-          className="relative h-[260px] w-full  cursor-grab select-none active:cursor-grabbing"
+          className="relative h-[360px] w-full cursor-grab select-none active:cursor-grabbing"
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
         >
-          <div className="relative mx-auto h-full max-w-4xl overflow-hidden">
+          <div className="relative mx-auto h-full max-w-5xl overflow-hidden">
             {testimonials.map((item, index) => {
               const prevIndex = prevIndexRef.current;
               let positionClass = "translate-x-full";
@@ -94,27 +98,30 @@ export default function TestimonialSlider() {
               }
 
               return (
-              <div
-                key={item.name}
-                className={
-                  "absolute inset-0 transition-transform transition-opacity duration-500 " +
-                  positionClass +
-                  (index === activeIndex ? " opacity-100" : " opacity-0")
-                }
-              >
-                  <p className="text-center text-[48px] font-light leading-[1.25] text-white">
-                    {item.quote}
-                  </p>
+                <div
+                  key={item.name}
+                  className={
+                    "absolute inset-0 flex flex-col transition-transform transition-opacity duration-700 " +
+                    positionClass +
+                    (index === activeIndex ? " opacity-100" : " opacity-0")
+                  }
+                >
+                  <div className="flex-grow flex flex-col justify-center align-center">
+                    <p className="text-center text-[48px] font-light leading-[1.25] text-white">
+                      {item.quote}
+                    </p>
+                  </div>
 
-                  <div className="mt-10 flex flex-row flex-nowrap items-center justify-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-xs text-white">
-                      Logo
+
+                  <div className="mt-14 flex flex-row flex-nowrap items-center justify-center gap-8">
+                    <div className="relative h-10 w-10 flex-none">
+                      <Image src={item.logo} alt={item.name} fill className="object-contain" />
                     </div>
                     <p className="text-white">
-                      <strong className="text-[22px] font-semibold">{item.name}</strong>{" "}
+                      <strong className="text-[22px] font-semibold mr-4">{item.name}</strong>{" "}
                       <span className="text-[22px] font-light">{item.role}</span>
                     </p>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 text-[30px]">
                       {Array.from({ length: 5 }).map((_, starIndex) => (
                         <span key={starIndex} className="text-[#DBC18D]">
                           ★

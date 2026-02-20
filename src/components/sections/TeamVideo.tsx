@@ -16,17 +16,20 @@ export default function TeamVideo() {
   };
 
   return (
-    <section className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16">
-      <div className="content-wrap flex flex-col items-center gap-4 text-center">
-        <h2>IHR SEID KEIN PROJEKT FUER UNS.</h2>
-        <h3>ES SEID UNSERE NEUE HERZENSANGELEGENHEIT.</h3>
+    <section className="flex w-full flex-col mt-32 items-center px-6 py-16 sm:px-10 lg:px-16">
+      <div className="content-wrap flex flex-col items-center gap-16 text-center">
+        <div className="flex flex-col gap-2">
+          <h2>IHR SEID KEIN PROJEKT FUER UNS.</h2>
+          <h3>ES SEID UNSERE NEUE HERZENSANGELEGENHEIT.</h3>
+        </div>
+
         <p>
           Verantwortung braucht Menschen, die sich wahrnehmen. Sonst bleibt sie ein leeres Versprechen.
-          Und hier sind die Menschen, die diese Verantwortung uebernehmen wollen.
+          <br />Und hier sind die Menschen, die diese Verantwortung uebernehmen wollen.
         </p>
       </div>
 
-      <div className="relative mt-10 h-[100svh] w-screen overflow-hidden bg-[#080716]">
+      <div className="relative mt-32 h-[100svh] w-screen overflow-hidden bg-[#080716]">
         <video
           ref={videoRef}
           className="h-full w-full object-cover"
