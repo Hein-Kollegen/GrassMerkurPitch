@@ -1,5 +1,14 @@
-﻿import HeroTypedTitle from "@/components/hero/HeroTypedTitle";
+import HeroTypedTitle from "@/components/hero/HeroTypedTitle";
+import ModellDetailSection from "@/components/sections/ModellDetailSection";
+import ModellSection from "@/components/sections/ModellSection";
+import OverviewSection from "@/components/sections/OverviewSection";
 import PartnersSection from "@/components/sections/PartnersSection";
+import CaseStudiesSection from "@/components/sections/CaseStudiesSection";
+import OutroSection from "@/components/sections/OutroSection";
+import RoadmapSection from "@/components/sections/RoadmapSection";
+import WorksSection from "@/components/sections/WorksSection";
+import TestimonialSlider from "@/components/sections/TestimonialSlider";
+import TeamVideo from "@/components/sections/TeamVideo";
 import TodayTomorrowSection from "@/components/sections/TodayTomorrowSection";
 
 const heroImages = [
@@ -92,6 +101,16 @@ export default function HomePage() {
       </section>
       <PartnersSection />
       <TodayTomorrowSection />
+      <ModellSection />
+      <ModellDetailSection />
+      <OverviewSection />
+      <TestimonialSlider />
+      <CaseStudiesSection />
+      <TeamVideo />
+      <WorksSection />
+      <RoadmapSection />
+      <OutroSection />
     </main>
   );
 }
+

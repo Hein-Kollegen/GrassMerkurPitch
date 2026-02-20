@@ -38,7 +38,23 @@
   }
 
   h2 {
-    line-height: 1.1;
+    color: #fff;
+    font-family: var(--font-display), sans-serif;
+    font-size: 60px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    color: #fff;
+    font-family: var(--font-display), sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    text-transform: uppercase;
   }
 
   p {
@@ -64,6 +80,26 @@ body {
   background: var(--color-midnight);
   color: var(--color-white);
   font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;
+}
+
+.slide-list-scroll {
+  scrollbar-color: #37515f #080716;
+  scrollbar-width: thin;
+}
+
+.slide-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.slide-list-scroll::-webkit-scrollbar-track {
+  background: #080716;
+  border-radius: 999px;
+}
+
+.slide-list-scroll::-webkit-scrollbar-thumb {
+  background: #37515f;
+  border-radius: 999px;
 }
 
 .hero-bg-mask {
