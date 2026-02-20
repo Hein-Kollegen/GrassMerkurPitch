@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 
@@ -6,7 +6,7 @@ const cases = [
   {
     title: "DAIMLER TRUCK",
     subtitle: "Markenaufbau",
-    description: "Daimler Truck & Buses in Oesterreich",
+    description: "Daimler Truck & Buses in Österreich",
     logo: "/assets/sections/partners/daimler-truck.png",
     mockup: "/assets/sections/case-studies/mockup-daimler.png"
   },
@@ -19,7 +19,7 @@ const cases = [
   },
   {
     title: "ProvenExpert",
-    subtitle: "Marktfuehrerschaft",
+    subtitle: "Marktführerschaft",
     description: "für ProvenExpert im Tourismus",
     logo: "/assets/sections/partners/proven-expert.png",
     mockup: "/assets/sections/case-studies/mockup-proven-expert.png"
@@ -57,7 +57,7 @@ export default function CaseStudiesSection() {
                     alt={item.title}
                     width={800}
                     height={600}
-                    className="w-full h-auto object-contain"
+                    className="h-auto w-full object-contain"
                   />
                 </div>
               </div>

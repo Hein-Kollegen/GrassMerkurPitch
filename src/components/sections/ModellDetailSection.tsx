@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useLayoutEffect, useRef } from "react";
 import type { TouchEvent, WheelEvent } from "react";
@@ -8,16 +8,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 const detailSlides = [
   {
     title: "1. STRATEGIE & MARKE",
-    subline: "Fundament schaffen, bevor Massnahmen starten.",
+    subline: "Fundament schaffen, bevor Maßnahmen starten.",
     mediaType: "image",
     mediaSrc: "/assets/sections/modell-detail/video-placeholder-strategie.png",
-    body:
-      "Hier entsteht Klarheit. Ohne sie wird Wachstum beliebig und zufaellig.",
+    body: "Hier entsteht Klarheit. Ohne sie wird Wachstum beliebig und zufällig.",
     list: [
       "Bestandsaufnahme Marketing- & Vertriebssystem",
       "Positionierungs-Workshop",
       "Zielgruppen- & Entscheideranalyse",
-      "Argumentationslogik fuer Entscheider",
+      "Argumentationslogik für Entscheider",
       "Angebots- & Leistungsarchitektur",
       "Corporate Identity & Messaging",
       "Wettbewerbsanalyse"
@@ -29,14 +28,13 @@ const detailSlides = [
     mediaType: "bg",
     mediaSrc: "/assets/sections/modell-detail/bg-sichtbarkeit.png",
     panelStyle: "overlay",
-    body:
-      "Nicht Reichweite ist das Ziel - sondern Wahrnehmung bei den richtigen Entscheidern.",
+    body: "Nicht Reichweite ist das Ziel - sondern Wahrnehmung bei den richtigen Entscheidern.",
     list: [
       "SEO & GEO (inkl. Nischen wie Lift & Shift)",
       "Sichtbarkeit in KI-Systemen & LLMs",
       "LinkedIn-Strategie & Reputationsmarketing",
       "Blogmarketing, White Papers & Fachartikel",
-      "Videomarketing (Erklaerung komplexer Loesungen)",
+      "Videomarketing (Erklärung komplexer Lösungen)",
       "Podcasting",
       "Event Marketing",
       "Empfehlungsmarketing",
@@ -51,8 +49,7 @@ const detailSlides = [
     subline: "Neukunden- und Recruitingprozesse reproduzierbar machen.",
     mediaType: "image",
     mediaSrc: "/assets/sections/modell-detail/video-placeholder-systeme.png",
-    body:
-      "Wachstum darf nicht vom Zufall oder einzelnen Personen abhaengen.",
+    body: "Wachstum darf nicht vom Zufall oder einzelnen Personen abhängen.",
     list: [
       "Strukturierter Neukunden-Funnel",
       "Event-Formate mit strukturiertem Follow-up",
@@ -66,12 +63,11 @@ const detailSlides = [
   },
   {
     title: "4. STRUKTUR",
-    subline: "Organisation stabilisieren, waehrend sie waechst.",
+    subline: "Organisation stabilisieren, während sie wächst.",
     mediaType: "video",
     mediaSrc: "/assets/sections/modell-detail/video-background-struktur.mp4",
     panelStyle: "overlay",
-    body:
-      "Wachstum darf nicht vom Zufall oder einzelnen Personen abhaengen.",
+    body: "Wachstum darf nicht vom Zufall oder einzelnen Personen abhängen.",
     list: [
       "Prozessanalyse & Optimierung",
       "Rollen- und Verantwortlichkeitsdefinition",
@@ -82,17 +78,16 @@ const detailSlides = [
   },
   {
     title: "5. SKALIERUNG",
-    subline: "Fuehrung und Organisation auf die naechste Stufe bringen.",
+    subline: "Führung und Organisation auf die nächste Stufe bringen.",
     mediaType: "video",
     mediaSrc: "/assets/sections/modell-detail/video-background-skalierung.mp4",
     panelStyle: "overlay",
-    body:
-      "Wachstum endet nicht bei Leads. Es endet in der Fuehrung.",
+    body: "Wachstum endet nicht bei Leads. Es endet in der Führung.",
     list: [
-      "Fuehrungsworkshops",
+      "Führungsworkshops",
       "Vertriebstrainings",
       "Strategische Roadmaps",
-      "Skalierungsplanung fuer neue Geschaeftsfelder",
+      "Skalierungsplanung für neue Geschäftsfelder",
       "Organisationsentwicklung",
       "Management-Sparring"
     ]
@@ -131,7 +126,6 @@ export default function ModellDetailSection() {
       stackRef.current.querySelectorAll<HTMLDivElement>("[data-slide]")
     );
 
-
     const holdPercent = 0;
     const timeline = gsap.timeline({
       scrollTrigger: {
@@ -149,12 +143,7 @@ export default function ModellDetailSection() {
     slides.forEach((slide, index) => {
       if (index === 0) return;
       timeline.set(slide, { zIndex: baseZ + index, y: window.innerHeight });
-      timeline.fromTo(
-        slide,
-        { y: window.innerHeight },
-        { y: 0, ease: "none", duration: 1 },
-        index
-      );
+      timeline.fromTo(slide, { y: window.innerHeight }, { y: 0, ease: "none", duration: 1 }, index);
     });
 
     ScrollTrigger.refresh();
@@ -169,15 +158,15 @@ export default function ModellDetailSection() {
     <section ref={sectionRef} className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
       <div className="content-wrap flex flex-col items-center gap-6 text-center">
         <h2 className="text-wrap-balance">DIE 5-S-MODULE IM DETAIL</h2>
-        <h3 className="text-wrap-balance font-semibold">5 MODULE FUER SICHERES WACHSTUM</h3>
+        <h3 className="text-wrap-balance font-semibold">5 MODULE FÜR SICHERES WACHSTUM</h3>
         <p>
-          Die 5-S-Module sind kein Massnahmenkatalog. Sie sind ein strukturiertes System, das Wachstum
+          Die 5-S-Module sind kein Maßnahmenkatalog. Sie sind ein strukturiertes System, das Wachstum
           planbar macht. Nicht alles gleichzeitig. Aber alles in der richtigen Reihenfolge.
         </p>
       </div>
       <div className="content-wrap mt-12 w-full">
         <div ref={stackRef} className="relative flex h-[100vh] w-full items-center justify-center">
-          {detailSlides.map((slide, index) => (
+          {detailSlides.map((slide) => (
             <div
               key={slide.title}
               data-slide
@@ -185,10 +174,10 @@ export default function ModellDetailSection() {
               style={
                 slide.mediaType === "bg"
                   ? {
-                    backgroundImage: `url(${slide.mediaSrc})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                  }
+                      backgroundImage: `url(${slide.mediaSrc})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }
                   : undefined
               }
             >
@@ -257,6 +246,7 @@ export default function ModellDetailSection() {
           ))}
         </div>
       </div>
-    </section >
+    </section>
   );
 }
+

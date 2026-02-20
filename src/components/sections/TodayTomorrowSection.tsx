@@ -22,7 +22,7 @@ type Tab = {
 const todayItems: Item[] = [
   {
     id: "today-1",
-    title: "Drei strategisch verzahnte Geschaeftsfelder",
+    title: "Drei strategisch verzahnte Geschäftsfelder",
     subtitle: "Co-Location, Managed Services, Consulting",
     body:
       "Drei klar definierte Leistungscluster, die Infrastruktur, Betrieb und Beratung verbinden."
@@ -30,16 +30,16 @@ const todayItems: Item[] = [
   {
     id: "today-2",
     title: "Netzwerkbasierte Kundengewinnung auf Entscheider-Ebene",
-    subtitle: "Kein Zufall. Sondern Vertrauen, das sich bewaehrt hat.",
+    subtitle: "Kein Zufall. Sondern Vertrauen, das sich bewährt hat.",
     body:
-      "Neue Kunden entstehen ueber ein ueber Jahre gewachsenes Netzwerk, persoenliche Beziehungen und Empfehlungen."
+      "Neue Kunden entstehen über ein über Jahre gewachsenes Netzwerk, persönliche Beziehungen und Empfehlungen."
   },
   {
     id: "today-3",
-    title: "Hoher Vertrauensfaktor bei langjaehrigen Bestandskunden",
+    title: "Hoher Vertrauensfaktor bei langjährigen Bestandskunden",
     subtitle: "Grass-Merkur entwickelt keine Kunden, sondern Vertrauen.",
     body:
-      "Kunden geben kritische Systeme in die Haende von Grass-Merkur."
+      "Kunden geben kritische Systeme in die Hände von Grass-Merkur."
   }
 ];
 
@@ -47,23 +47,23 @@ const potentialsItems: Item[] = [
   {
     id: "pot-1",
     title: "Digitale Präsenz in Entscheidungsphasen",
-    subtitle: "Heute entsteht Sichtbarkeit primaer über Netzwerke.",
+    subtitle: "Heute entsteht Sichtbarkeit primär über Netzwerke.",
     body:
-      "Potenzial liegt in zusaetzlicher Präsenz bei Google, in KI-Systemen und auf LinkedIn – dort, wo Entscheider recherchieren und sich absichern."
+      "Potenzial liegt in zusätzlicher Präsenz bei Google, in KI-Systemen und auf LinkedIn – dort, wo Entscheider recherchieren und sich absichern."
   },
   {
     id: "pot-2",
     title: "Strategische Positionierung statt reiner Infrastruktur-Wahrnehmung",
-    subtitle: "Grass-Merkur koennte klarer als strategischer IT-Partner auftreten.",
+    subtitle: "Grass-Merkur könnte klarer als strategischer IT-Partner auftreten.",
     body:
       "Mit Infrastruktur, Managed Services und Consulting aus einer Hand. Nicht nur als Betreiber, sondern noch mehr als Verantwortungspartner."
   },
   {
     id: "pot-3",
-    title: "Regulatorischer Rueckenwind als Wachstumshebel",
-    subtitle: "KRITIS & NIS2 erhoehen Handlungsdruck im Markt.",
+    title: "Regulatorischer Rückenwind als Wachstumshebel",
+    subtitle: "KRITIS & NIS2 erhöhen Handlungsdruck im Markt.",
     body:
-      "Grass-Merkur hat die Kompetenz, sich als Ansprechpartner fuer sichere, regulatorisch belastbare IT-Infrastruktur zu positionieren."
+      "Grass-Merkur hat die Kompetenz, sich als Ansprechpartner für sichere, regulatorisch belastbare IT-Infrastruktur zu positionieren."
   }
 ];
 
@@ -76,11 +76,11 @@ const tomorrowItems: Item[] = [
       "Genau dort, wo Entscheider recherchieren, vergleichen und absichern.",
     list: [
       "Google",
-      "in KI-gestuetzten Recherche-Systemen",
+      "in KI-gestützten Recherche-Systemen",
       "auf LinkedIn und relevanten Fachplattformen"
     ],
     bodyAfterList:
-      "Nicht personalabhaengig, nicht zufallsgesteuert, sondern mit klaren Vertriebssystemen, messbarer Sichtbarkeit und kontinuierlich qualifizierten Anfragen. Wachstum wird planbar."
+      "Nicht personalabhängig, nicht zufallsgesteuert, sondern mit klaren Vertriebssystemen, messbarer Sichtbarkeit und kontinuierlich qualifizierten Anfragen. Wachstum wird planbar."
   },
   {
     id: "mor-2",
@@ -104,10 +104,10 @@ const tomorrowItems: Item[] = [
       "regulatorische Sicherheit",
       "Compliance",
       "belastbare Infrastruktur",
-      "langfristige Stabilitaet"
+      "langfristige Stabilität"
     ],
     bodyAfterList:
-      "Damit ist Grass-Merkur nicht der naechste Anbieter, sondern die Referenz."
+      "Damit ist Grass-Merkur nicht der nächste Anbieter, sondern die Referenz."
   }
 ];
 
@@ -239,3 +239,6 @@ export default function TodayTomorrowSection() {
     </section>
   );
 }
+
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
@@ -7,73 +7,47 @@ import Draggable from "gsap/Draggable";
 const timelineCards = [
   {
     title: "1. Strategie",
-    subline: "Wofuer stehen wir?",
+    subline: "Wofür stehen wir?",
     iconSrc: "/assets/sections/modell/animated-icon (3).gif",
-    body:
-      "Klarheit ueber Positionierung, Nutzenversprechen und Zielgruppe.",
+    body: "Klarheit über Positionierung, Nutzenversprechen und Zielgruppe.",
     list: [
       "Zielkunden definieren",
-      "Leistungsversprechen schaerfen",
+      "Leistungsversprechen schärfen",
       "Marktposition festlegen"
     ],
-    footer:
-      "Strategie schafft Fokus und Richtung fuer alle weiteren Schritte."
+    footer: "Strategie schafft Fokus und Richtung für alle weiteren Schritte."
   },
   {
     title: "2. Sichtbarkeit",
     subline: "Relevant in Entscheidungsphasen",
     iconSrc: "/assets/sections/modell/animated-icon (2).gif",
-    body:
-      "Praesenz dort, wo Entscheider recherchieren und vergleichen.",
-    list: [
-      "Suchmaschinen",
-      "KI-gestuetzte Recherche",
-      "LinkedIn & Fachplattformen"
-    ],
-    footer:
-      "Sichtbarkeit wird messbar und kontinuierlich aufgebaut."
+    body: "Präsenz dort, wo Entscheider recherchieren und vergleichen.",
+    list: ["Suchmaschinen", "KI-gestützte Recherche", "LinkedIn & Fachplattformen"],
+    footer: "Sichtbarkeit wird messbar und kontinuierlich aufgebaut."
   },
   {
     title: "3. Systeme",
     subline: "Wachstum reproduzierbar machen",
     iconSrc: "/assets/sections/modell/animated-icon (1).gif",
-    body:
-      "Strukturen, Prozesse und Inhalte sorgen fuer planbare Ergebnisse.",
-    list: [
-      "Content-Systeme",
-      "Lead-Qualifizierung",
-      "Vertriebsmaterialien"
-    ],
-    footer:
-      "Systeme machen Wachstum stabil und skalierbar."
+    body: "Strukturen, Prozesse und Inhalte sorgen für planbare Ergebnisse.",
+    list: ["Content-Systeme", "Lead-Qualifizierung", "Vertriebsmaterialien"],
+    footer: "Systeme machen Wachstum stabil und skalierbar."
   },
   {
     title: "4. Struktur",
-    subline: "Organisation, die Wachstum traegt",
+    subline: "Organisation, die Wachstum trägt",
     iconSrc: "/assets/sections/modell/animated-icon (3).gif",
-    body:
-      "Rollen, Ablaeufe und Verantwortungen werden klar definiert.",
-    list: [
-      "Verantwortlichkeiten",
-      "Prozessklarheit",
-      "Messbare Ziele"
-    ],
-    footer:
-      "Struktur verhindert Reibung und schafft Geschwindigkeit."
+    body: "Rollen, Abläufe und Verantwortungen werden klar definiert.",
+    list: ["Verantwortlichkeiten", "Prozessklarheit", "Messbare Ziele"],
+    footer: "Struktur verhindert Reibung und schafft Geschwindigkeit."
   },
   {
     title: "5. Skalierung",
-    subline: "Fuehrung, die mitwaechst",
+    subline: "Führung, die mitwächst",
     iconSrc: "/assets/sections/modell/animated-icon (3).gif",
-    body:
-      "Fuehrung, Kultur und Ressourcen wachsen mit dem Unternehmen.",
-    list: [
-      "Mitarbeitergewinnung",
-      "Fuehrungssysteme",
-      "Kontinuierliche Optimierung"
-    ],
-    footer:
-      "Skalierung wird planbar und kontrollierbar."
+    body: "Führung, Kultur und Ressourcen wachsen mit dem Unternehmen.",
+    list: ["Mitarbeitergewinnung", "Führungssysteme", "Kontinuierliche Optimierung"],
+    footer: "Skalierung wird planbar und kontrollierbar."
   }
 ];
 
@@ -128,8 +102,15 @@ export default function ModellSection() {
           <h2 className="uppercase">Das 5-S-Modell für sicheres Wachstum</h2>
         </div>
         <div className="flex flex-col gap-4">
-          <p>Planbares Wachstum entsteht nicht durch einzelne Massnahmen. Es entsteht durch Struktur.</p>
-          <p>Mit dem 5-S-Modell buendeln wir die relevanten Wachstumshebel in einer klaren Systematik. Sichtbarkeit wird messbar. Anfragen werden planbar. Mitarbeitergewinnung wird systematisch. Fuehrung wird strategisch. Wachstum ist kein Zufall mehr, sondern ein steuerbarer Prozess.</p>
+          <p>
+            Planbares Wachstum entsteht nicht durch einzelne Maßnahmen. Es entsteht durch Struktur.
+          </p>
+          <p>
+            Mit dem 5-S-Modell bündeln wir die relevanten Wachstumshebel in einer klaren Systematik.
+            Sichtbarkeit wird messbar. Anfragen werden planbar. Mitarbeitergewinnung wird
+            systematisch. Führung wird strategisch. Wachstum ist kein Zufall mehr, sondern ein
+            steuerbarer Prozess.
+          </p>
         </div>
       </div>
       <div className="content-wrap mt-32 w-full">
@@ -174,3 +155,4 @@ export default function ModellSection() {
     </section>
   );
 }
+

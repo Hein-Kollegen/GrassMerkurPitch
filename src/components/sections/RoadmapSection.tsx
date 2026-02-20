@@ -6,30 +6,33 @@ const roadmapCards = [
     items: [
       "Analyse bestehender Prozesse",
       "Bewertung aktueller Sichtbarkeit",
-      "Identifikation blinder Wachstumslogiken"
+      "Bewertung bestehender Vertriebslogik",
+      "Identifikation struktureller L�cken"
     ]
   },
   {
     title: "2. Positionierungs-Workshop",
     items: [
-      "Zielgruppenpositionierung",
+      "Zielgruppenpriorisierung",
       "Differenzierung im Wettbewerbsumfeld",
+      "Kernbotschaften",
       "Strategische Fokussierung"
     ]
   },
   {
     title: "3. Zielgruppen- & Entscheideranalyse",
     items: [
-      "IT-Leitung vs. Geschaeftsfuehrung",
+      "IT-Leitung vs. Gesch�ftsf�hrung",
       "Entscheidungslogiken",
-      "Typische Einwaende"
+      "Typische Einw�nde",
+      "Risikoabw�gungen"
     ]
   },
   {
     title: "4. Argumentationsarchitektur",
     items: [
       "Value Proposition",
-      "Vertrauensaufbau",
+      "Vertrauensbeweise",
       "Nutzenargumentation je Entscheiderebene"
     ]
   },
@@ -37,32 +40,35 @@ const roadmapCards = [
     title: "5. Angebots- & Leistungsarchitektur",
     items: [
       "Strukturierung der Produktcluster",
-      "Klare Leistungspakete",
-      "Einstiegspunkte fuer Neukunden"
+      "Klare Leistungsabgrenzung",
+      "Paketlogiken",
+      "Einstiegspunkte f�r Neukunden"
     ]
   },
   {
     title: "6. Corporate Identity & Messaging-Rahmen",
     items: [
-      "Brand Voice",
-      "Claim- und Leitgedankenentwicklung",
-      "Inhaltliche Leitlinien fuer Website & Content"
+      "Sch�rfung Markenauftritt",
+      "Tonalit�t",
+      "Claim-/Leitgedankenentwicklung",
+      "Inhaltliche Leitlinien f�r Website & Content"
     ]
   },
   {
     title: "7. Wettbewerbs- & Sichtbarkeitsanalyse",
     items: [
-      "Digitale Praesenz Wettbewerber",
+      "Digitale Pr�senz Wettbewerber",
       "SEO- & LLM-Potenziale",
-      "Positionierungsluecken im Markt"
+      "Positionierungsl�cken im Markt"
     ]
   },
   {
     title: "8. Operative Wachstums-Roadmap",
     items: [
-      "Priorisierung der Top 5 S- Schritte",
-      "Definition der ersten Umsetzungspfad",
-      "KPIs und Zeitplan"
+      "Priorisierung der Tools f�r S2 - Sichtbarkeit",
+      "Definition der ersten Umsetzungsfelder",
+      "Budget- & Ressourcenplanung",
+      "12-Monats-Wachstumsfahrplan"
     ]
   }
 ];
@@ -75,13 +81,13 @@ export default function RoadmapSection() {
         <h3>JA? NEIN? VIELLEICHT? FALLS JA, DANN VIELLEICHT SO?</h3>
       </div>
 
-      <div className="content-wrap mt-12 grid grid-cols-1 gap-y-10 gap-x-24 lg:grid-cols-2">
+      <div className="content-wrap mt-32 grid grid-cols-1 gap-y-14 gap-x-32 lg:grid-cols-2">
         {roadmapCards.map((card, index) => (
           <div
             key={card.title}
             className={
-              "rounded-[40px] border border-[#DBC18D]/30 bg-[#080716] p-10 transition-[border-color,background,transform] duration-300 ease-out hover:bg-[linear-gradient(90deg,#082940_0%,#080716_100%)] " +
-              (index % 2 === 1 ? "lg:translate-y-10" : "")
+              "flex flex-col justify-center rounded-[40px] border border-[#DBC18D]/30 bg-[#080716] p-16 transition-[border-color,background,transform] duration-300 ease-out hover:bg-[linear-gradient(90deg,#082940_0%,#080716_100%)] " +
+              (index % 2 === 1 ? "lg:translate-y-24" : "")
             }
           >
             <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>

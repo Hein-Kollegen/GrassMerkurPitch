@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import Image from "next/image";
 
 const counters = [
-  { value: "50.000+", label: "Zuhoerer pro Jahr" },
-  { value: "10.000+", label: "Follower auf relevanten Social-Media-Kanaelen" },
+  { value: "50.000+", label: "Zuhörer pro Jahr" },
+  { value: "10.000+", label: "Follower auf relevanten Social-Media-Kanälen" },
   { value: "5.000+", label: "Entscheider im eigenen Netzwerk" },
   { value: "10+", label: "eigene Formate" }
 ];
@@ -23,8 +23,8 @@ export default function OverviewSection() {
     <section className="flex w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
       <div className="content-wrap flex flex-col items-center gap-10 text-center">
         <div className="flex flex-col items-center gap-4">
-          <h2>HEIN & KOLLEGEN IM UEBERBLICK</h2>
-          <h3>WACHSTUM ENTSTEHT, WO RELEVANZ, REICHWEITE UND <br />GLAUBWUERDIGKEIT ZUSAMMENKOMMEN.</h3>
+          <h2>HEIN & KOLLEGEN IM ÜBERBLICK</h2>
+          <h3>WACHSTUM ENTSTEHT, WO RELEVANZ, REICHWEITE UND GLAUBWÜRDIGKEIT ZUSAMMENKOMMEN.</h3>
         </div>
 
         <div className="mt-12 flex flex-wrap justify-center gap-8">
@@ -42,10 +42,7 @@ export default function OverviewSection() {
 
         <div className="mt-12 flex flex-nowrap justify-between gap-6 overflow-x-auto scroll-smooth pr-2">
           {badges.map((badge) => (
-            <div
-              key={badge.src}
-              className="relative h-32 w-32 flex-none"
-            >
+            <div key={badge.src} className="relative h-32 w-32 flex-none">
               <Image src={badge.src} alt={badge.name} fill className="object-contain" />
             </div>
           ))}
@@ -54,3 +51,4 @@ export default function OverviewSection() {
     </section>
   );
 }
+

@@ -13,14 +13,14 @@ const testimonials = [
   },
   {
     quote:
-      "\"Hein & Kollegen sind die Pragmatiker fuer den Mittelstand.\"",
+      "\"Hein & Kollegen sind die Pragmatiker für den Mittelstand.\"",
     name: "brandeins",
     role: "Die besten Unternehmensberater 2024",
     logo: "/assets/sections/testimonials/logo-brandeins.png"
   },
   {
     quote:
-      "\"Hein & Kollegen - fuer mich das Schweizer Taschenmesser\nim Marketing!\"",
+      "\"Hein & Kollegen - für mich das Schweizer Taschenmesser\nim Marketing!\"",
     name: "Matthias Bianchi",
     role: "Leiter Public Affairs, Deutscher Mittelstands-Bund",
     logo: "/assets/sections/testimonials/logo-dmb.png"

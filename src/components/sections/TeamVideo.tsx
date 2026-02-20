@@ -19,13 +19,14 @@ export default function TeamVideo() {
     <section className="flex w-full flex-col mt-32 items-center px-6 py-16 sm:px-10 lg:px-16">
       <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <div className="flex flex-col gap-2">
-          <h2>IHR SEID KEIN PROJEKT FUER UNS.</h2>
+          <h2>IHR SEID KEIN PROJEKT FÜR UNS.</h2>
           <h3>ES SEID UNSERE NEUE HERZENSANGELEGENHEIT.</h3>
         </div>
 
         <p>
           Verantwortung braucht Menschen, die sich wahrnehmen. Sonst bleibt sie ein leeres Versprechen.
-          <br />Und hier sind die Menschen, die diese Verantwortung uebernehmen wollen.
+          <br />
+          Und hier sind die Menschen, die diese Verantwortung übernehmen wollen.
         </p>
       </div>
 

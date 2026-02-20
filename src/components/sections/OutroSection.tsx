@@ -9,7 +9,7 @@ export default function OutroSection() {
           alt="Hein & Kollegen"
           className="h-[48px] w-auto"
         />
-        <div className="text-[20px] tracking-[0.2em] text-[#DBC18D]" aria-label="5 stars">
+        <div className="text-[32px] tracking-[0.2em] text-[#DBC18D]" aria-label="5 stars">
           {"★★★★★"}
         </div>
       </div>
