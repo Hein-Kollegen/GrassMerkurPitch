@@ -3,26 +3,26 @@
 const works = [
   {
     title: "Redaktionsplanung",
-    image: "/assets/hero/hero-bg (1).png"
+    image: "/assets/sections/hero/hero-bg (1).png"
   },
   {
     title: "TalentRadar",
-    image: "/assets/hero/hero-bg (2).png"
+    image: "/assets/sections/hero/hero-bg (2).png"
   },
   {
     title: "KI-Support-Framework f\u00fcr Lift-&-Shift-Projekte",
-    image: "/assets/hero/hero-bg (3).png"
+    image: "/assets/sections/hero/hero-bg (3).png"
   },
   {
     title: "J\u00e4hrlicher Trust-Report f\u00fcr kritische IT-Infrastruktur",
     description: "Ein unabh\u00e4ngiger Blick auf Risiken, Entscheidungen und Vertrauen.",
-    image: "/assets/hero/hero-bg (4).png"
+    image: "/assets/sections/hero/hero-bg (4).png"
   },
   {
     title: "KRITIS Leadership Summit - Ibiza / Mallorca",
     description:
       "Ein invitation-only Summit f\u00fcr KRITIS-Entscheider. IT-Leitung und Gesch\u00e4ftsf\u00fchrung gemeinsam. Fokus: Verantwortung, Haftung, Entscheidungslogik.",
-    image: "/assets/hero/hero-bg (5).png"
+    image: "/assets/sections/hero/hero-bg (5).png"
   }
 ];
 

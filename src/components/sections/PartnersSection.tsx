@@ -2,29 +2,29 @@
 
 const rows = [
   [
-    { name: "ProvenExpert", src: "/assets/partners/proven-expert.png" },
-    { name: "Volksbank", src: "/assets/partners/volksbank.png" },
-    { name: "Swisspor", src: "/assets/partners/swisspor.png" },
-    { name: "Reiseland", src: "/assets/partners/reiseland.png" }
+    { name: "ProvenExpert", src: "/assets/sections/partners/proven-expert.png" },
+    { name: "Volksbank", src: "/assets/sections/partners/volksbank.png" },
+    { name: "Swisspor", src: "/assets/sections/partners/swisspor.png" },
+    { name: "Reiseland", src: "/assets/sections/partners/reiseland.png" }
   ],
   [
-    { name: "Point S", src: "/assets/partners/point-s.png" },
-    { name: "Metzger", src: "/assets/partners/metzger.png" },
-    { name: "Krammer", src: "/assets/partners/krammer.png" },
-    { name: "HSB", src: "/assets/partners/hsb.png" }
+    { name: "Point S", src: "/assets/sections/partners/point-s.png" },
+    { name: "Metzger", src: "/assets/sections/partners/metzger.png" },
+    { name: "Krammer", src: "/assets/sections/partners/krammer.png" },
+    { name: "HSB", src: "/assets/sections/partners/hsb.png" }
   ],
   [
-    { name: "DMB", src: "/assets/partners/dmb.png" },
-    { name: "Daimler Truck", src: "/assets/partners/daimler-truck.png" },
-    { name: "VDV", src: "/assets/partners/vdv.png" },
-    { name: "b4it", src: "/assets/partners/b4it.png" }
+    { name: "DMB", src: "/assets/sections/partners/dmb.png" },
+    { name: "Daimler Truck", src: "/assets/sections/partners/daimler-truck.png" },
+    { name: "VDV", src: "/assets/sections/partners/vdv.png" },
+    { name: "b4it", src: "/assets/sections/partners/b4it.png" }
   ],
   [
-    { name: "Senden", src: "/assets/partners/senden.png" },
-    { name: "Schubert Motors", src: "/assets/partners/schubert-motors.png" },
-    { name: "Telcat", src: "/assets/partners/telcat.png" },
-    { name: "BMW Motorsport", src: "/assets/partners/bmw-motorsport.png" },
-    { name: "R+V", src: "/assets/partners/rv.png" }
+    { name: "Senden", src: "/assets/sections/partners/senden.png" },
+    { name: "Schubert Motors", src: "/assets/sections/partners/schubert-motors.png" },
+    { name: "Telcat", src: "/assets/sections/partners/telcat.png" },
+    { name: "BMW Motorsport", src: "/assets/sections/partners/bmw-motorsport.png" },
+    { name: "R+V", src: "/assets/sections/partners/rv.png" }
   ]
 ];
 

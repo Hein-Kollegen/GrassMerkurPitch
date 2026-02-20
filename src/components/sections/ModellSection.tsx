@@ -8,6 +8,7 @@ const timelineCards = [
   {
     title: "1. Strategie",
     subline: "Wofuer stehen wir?",
+    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
     body:
       "Klarheit ueber Positionierung, Nutzenversprechen und Zielgruppe.",
     list: [
@@ -21,6 +22,7 @@ const timelineCards = [
   {
     title: "2. Sichtbarkeit",
     subline: "Relevant in Entscheidungsphasen",
+    iconSrc: "/assets/sections/modell/animated-icon (2).gif",
     body:
       "Praesenz dort, wo Entscheider recherchieren und vergleichen.",
     list: [
@@ -34,6 +36,7 @@ const timelineCards = [
   {
     title: "3. Systeme",
     subline: "Wachstum reproduzierbar machen",
+    iconSrc: "/assets/sections/modell/animated-icon (1).gif",
     body:
       "Strukturen, Prozesse und Inhalte sorgen fuer planbare Ergebnisse.",
     list: [
@@ -47,6 +50,7 @@ const timelineCards = [
   {
     title: "4. Struktur",
     subline: "Organisation, die Wachstum traegt",
+    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
     body:
       "Rollen, Ablaeufe und Verantwortungen werden klar definiert.",
     list: [
@@ -60,6 +64,7 @@ const timelineCards = [
   {
     title: "5. Skalierung",
     subline: "Fuehrung, die mitwaechst",
+    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
     body:
       "Fuehrung, Kultur und Ressourcen wachsen mit dem Unternehmen.",
     list: [
@@ -142,7 +147,7 @@ export default function ModellSection() {
                 }
               >
                 <div className="absolute right-4 top-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#DBC18D]/30 p-2">
-                  <span className="h-10 w-10" aria-hidden="true" />
+                  <img src={card.iconSrc} alt="" className="h-10 w-10 object-contain" />
                 </div>
                 <h3 className="text-left text-[30px] font-medium uppercase text-white">
                   {card.title}

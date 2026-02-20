@@ -5,7 +5,7 @@ export default function OutroSection() {
     <section className="flex h-[100svh] w-full items-center justify-center bg-[#080716]">
       <div className="flex flex-col items-center gap-3">
         <img
-          src="/assets/hero/hk-logo.svg"
+          src="/assets/page/hk-logo.svg"
           alt="Hein & Kollegen"
           className="h-[48px] w-auto"
         />

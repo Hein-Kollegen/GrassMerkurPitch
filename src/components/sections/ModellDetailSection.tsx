@@ -8,6 +8,8 @@ const detailSlides = [
   {
     title: "1. STRATEGIE & MARKE",
     subline: "Fundament schaffen, bevor Massnahmen starten.",
+    mediaType: "image",
+    mediaSrc: "/assets/sections/modell-detail/video-placeholder-strategie.png",
     body:
       "Hier entsteht Klarheit. Ohne sie wird Wachstum beliebig und zufaellig.",
     list: [
@@ -23,6 +25,9 @@ const detailSlides = [
   {
     title: "2. SICHTBARKEIT",
     subline: "Relevanz in Entscheidungsphasen aufbauen.",
+    mediaType: "bg",
+    mediaSrc: "/assets/sections/modell-detail/bg-sichtbarkeit.png",
+    panelStyle: "overlay",
     body:
       "Nicht Reichweite ist das Ziel - sondern Wahrnehmung bei den richtigen Entscheidern.",
     list: [
@@ -43,6 +48,8 @@ const detailSlides = [
   {
     title: "3. SYSTEME",
     subline: "Neukunden- und Recruitingprozesse reproduzierbar machen.",
+    mediaType: "image",
+    mediaSrc: "/assets/sections/modell-detail/video-placeholder-systeme.png",
     body:
       "Wachstum darf nicht vom Zufall oder einzelnen Personen abhaengen.",
     list: [
@@ -59,6 +66,9 @@ const detailSlides = [
   {
     title: "4. STRUKTUR",
     subline: "Organisation stabilisieren, waehrend sie waechst.",
+    mediaType: "video",
+    mediaSrc: "/assets/sections/modell-detail/video-background-struktur.mp4",
+    panelStyle: "overlay",
     body:
       "Wachstum darf nicht vom Zufall oder einzelnen Personen abhaengen.",
     list: [
@@ -72,6 +82,9 @@ const detailSlides = [
   {
     title: "5. SKALIERUNG",
     subline: "Fuehrung und Organisation auf die naechste Stufe bringen.",
+    mediaType: "video",
+    mediaSrc: "/assets/sections/modell-detail/video-background-skalierung.mp4",
+    panelStyle: "overlay",
     body:
       "Wachstum endet nicht bei Leads. Es endet in der Fuehrung.",
     list: [
@@ -135,8 +148,8 @@ export default function ModellDetailSection() {
   return (
     <section ref={sectionRef} className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16">
       <div className="content-wrap flex flex-col items-center gap-6 text-center">
-        <h2>DIE 5-S-MODULE IM DETAIL</h2>
-        <h3 className="font-light">5 MODULE FUER SICHERES WACHSTUM</h3>
+        <h2 className="text-wrap-balance">DIE 5-S-MODULE IM DETAIL</h2>
+        <h3 className="text-wrap-balance font-semibold">5 MODULE FUER SICHERES WACHSTUM</h3>
         <p>
           Die 5-S-Module sind kein Massnahmenkatalog. Sie sind ein strukturiertes System, das Wachstum
           planbar macht. Nicht alles gleichzeitig. Aber alles in der richtigen Reihenfolge.
@@ -149,27 +162,69 @@ export default function ModellDetailSection() {
               key={slide.title}
               data-slide
               className="absolute left-1/2 top-1/2 h-[80vh] w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[20px] border border-[#37515F] bg-[#080716]"
+              style={
+                slide.mediaType === "bg"
+                  ? {
+                    backgroundImage: `url(${slide.mediaSrc})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                  }
+                  : undefined
+              }
             >
-              <div className="h-full w-full p-8">
+              {slide.mediaType === "video" ? (
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  src={slide.mediaSrc}
+                />
+              ) : null}
+              <div className="h-full w-full">
                 <div className="grid h-full grid-cols-2">
-                  <div className="h-full w-full">
-                    <div className="h-full w-full rounded-[18px]" />
+                  <div className="relative h-full w-full">
+                    {slide.mediaType === "image" ? (
+                      <img
+                        src={slide.mediaSrc}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-contain object-left"
+                      />
+                    ) : null}
                   </div>
-                  <div className="flex h-full flex-col justify-center px-10">
-                    <h3 className="text-left">{slide.title}</h3>
-                    <div className="mt-4 space-y-3">
-                      <h4 className="text-left">{slide.subline}</h4>
-                      <p className="text-left text-[#DBC18D]">{slide.body}</p>
-                    </div>
-                    <div className="slide-list-scroll mt-6 max-h-[220px] overflow-y-auto pr-2">
-                      {slide.list.map((entry) => (
-                        <div key={entry} className="flex items-center gap-3">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#37515F] text-xs">
-                            &gt;
-                          </span>
-                          <p className="text-left">{entry}</p>
-                        </div>
-                      ))}
+                  <div
+                    className={
+                      "flex h-full flex-col justify-center px-10 " +
+                      (slide.panelStyle === "overlay"
+                        ? "bg-[linear-gradient(270deg,rgba(8,7,22,0.60)_0%,#080716_100%)] backdrop-blur-md"
+                        : "")
+                    }
+                  >
+                    <div className="flex h-full flex-col justify-center gap-8">
+                      <h3 className="text-left text-wrap-balance font-semibold">{slide.title}</h3>
+                      <div className="flex flex-col gap-2">
+                        <h4 className="text-left text-[20px] text-wrap-balance font-semibold">
+                          {slide.subline}
+                        </h4>
+                        <p className="text-left text-[#DBC18D]">{slide.body}</p>
+                      </div>
+                      <div className="slide-list-scroll mt-6 max-h-[220px] overflow-y-auto overflow-x-hidden pr-2 flex flex-col gap-4">
+                        {slide.list.map((entry) => (
+                          <div key={entry} className="flex flex-nowrap items-center gap-4">
+                            <span className="flex h-[41px] w-[41px] flex-none items-center justify-center rounded-full border border-[#DBC18D42]">
+                              <img
+                                src="/assets/sections/modell-detail/arrow-icon.svg"
+                                alt=""
+                                className="h-[11px] w-[11px]"
+                              />
+                            </span>
+                            <p className="min-w-0 flex-shrink flex-grow-0 rounded-[30px] border border-[#DBC18D42] px-4 py-2 text-left text-wrap-balance">
+                              {entry}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -178,6 +233,6 @@ export default function ModellDetailSection() {
           ))}
         </div>
       </div>
-    </section>
+    </section >
   );
 }

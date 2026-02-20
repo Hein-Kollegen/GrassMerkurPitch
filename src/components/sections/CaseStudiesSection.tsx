@@ -9,12 +9,12 @@ const cases = [
   {
     title: "b4run",
     subtitle: "Wachstum mit dem 5-S-Modell",
-    description: "fuer B-4it AG"
+    description: "für B-4it AG"
   },
   {
     title: "ProvenExpert",
     subtitle: "Marktfuehrerschaft",
-    description: "fuer ProvenExpert im Tourismus"
+    description: "für ProvenExpert im Tourismus"
   }
 ];
 

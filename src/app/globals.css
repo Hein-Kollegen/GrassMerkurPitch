@@ -84,7 +84,7 @@ body {
 }
 
 .slide-list-scroll {
-  scrollbar-color: #37515f #080716;
+  scrollbar-color: #dbc18d #080716;
   scrollbar-width: thin;
 }
 
@@ -98,7 +98,7 @@ body {
 }
 
 .slide-list-scroll::-webkit-scrollbar-thumb {
-  background: #37515f;
+  background: #dbc18d;
   border-radius: 999px;
 }
 

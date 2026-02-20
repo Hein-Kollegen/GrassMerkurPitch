@@ -12,18 +12,18 @@ import TeamVideo from "@/components/sections/TeamVideo";
 import TodayTomorrowSection from "@/components/sections/TodayTomorrowSection";
 
 const heroImages = [
-  "/assets/hero/hero-bg (1).png",
-  "/assets/hero/hero-bg (2).png",
-  "/assets/hero/hero-bg (3).png",
-  "/assets/hero/hero-bg (4).png",
-  "/assets/hero/hero-bg (5).png",
-  "/assets/hero/hero-bg (6).png",
-  "/assets/hero/hero-bg (7).png",
-  "/assets/hero/hero-bg (8).png",
-  "/assets/hero/hero-bg (9).png",
-  "/assets/hero/hero-bg (10).png",
-  "/assets/hero/hero-bg (11).png",
-  "/assets/hero/hero-bg (12).png"
+  "/assets/sections/hero/hero-bg (1).png",
+  "/assets/sections/hero/hero-bg (2).png",
+  "/assets/sections/hero/hero-bg (3).png",
+  "/assets/sections/hero/hero-bg (4).png",
+  "/assets/sections/hero/hero-bg (5).png",
+  "/assets/sections/hero/hero-bg (6).png",
+  "/assets/sections/hero/hero-bg (7).png",
+  "/assets/sections/hero/hero-bg (8).png",
+  "/assets/sections/hero/hero-bg (9).png",
+  "/assets/sections/hero/hero-bg (10).png",
+  "/assets/sections/hero/hero-bg (11).png",
+  "/assets/sections/hero/hero-bg (12).png"
 ];
 
 function HeroRow({
@@ -83,7 +83,7 @@ export default function HomePage() {
         <div className="content-wrap relative z-10 flex flex-1 flex-col">
           <div className="flex w-full justify-center pt-4 sm:pt-6">
             <img
-              src="/assets/hero/hk-logo.svg"
+              src="/assets/page/hk-logo.svg"
               alt="Hein & Kollegen"
               className="h-[40px] w-auto"
             />

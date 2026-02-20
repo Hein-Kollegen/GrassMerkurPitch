@@ -32,7 +32,7 @@ export default function TeamVideo() {
           className="h-full w-full object-cover"
           playsInline
           preload="metadata"
-          src="/assets/videos/team.mp4"
+          src="/assets/sections/team-video/team.mp4"
         />
         <button
           type="button"
