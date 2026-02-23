@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { useSplitLines } from "@/components/typography/useSplitLines";
 import { useSplitScale } from "@/components/typography/useSplitScale";
+import { Section } from "@/components/layout/Section";
 
 const counters = [
   { value: "50.000+", label: "Zuhörer pro Jahr" },
@@ -91,9 +92,11 @@ export default function OverviewSection() {
         numberSpan.setAttribute("data-counter-number", "true");
         numberSpan.textContent = numericPart;
         valueEl.appendChild(numberSpan);
+        gsap.set(numberSpan, { opacity: 0 });
         if (suffixPart) {
           const suffixSpan = document.createElement("span");
           suffixSpan.textContent = suffixPart;
+          gsap.set(suffixSpan, { opacity: 0 });
           valueEl.appendChild(suffixSpan);
         }
         const tl = gsap.timeline();
@@ -101,14 +104,31 @@ export default function OverviewSection() {
         tl.fromTo(
           numberSpan,
           {
+            opacity: 0,
             scrambleText: { text: numericPart, chars: "0123456789" }
           },
           {
+            opacity: 1,
             scrambleText: { text: numericPart, chars: "0123456789" },
             duration: 2,
             ease: "power2.out"
           }
-        ).fromTo(
+        );
+
+        if (suffixPart) {
+          const suffixSpan = valueEl.querySelector<HTMLElement>(
+            "span:not([data-counter-number])"
+          );
+          if (suffixSpan) {
+            tl.to(
+              suffixSpan,
+              { opacity: 1, duration: 0.6, ease: "power2.out" },
+              "-=1.2"
+            );
+          }
+        }
+
+        tl.fromTo(
           labelEl,
           { scale: 0.5, opacity: 0 },
           { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.8)" },
@@ -124,7 +144,7 @@ export default function OverviewSection() {
       );
 
       if (badgeEls.length && badgesRef.current) {
-        gsap.fromTo(
+        const badgesTween = gsap.fromTo(
           badgeEls,
           { scale: 0.9, opacity: 0, transformOrigin: "center center" },
           {
@@ -132,24 +152,22 @@ export default function OverviewSection() {
             opacity: 1,
             duration: 1,
             ease: "power2.out",
-            stagger: 0.08,
-            scrollTrigger: {
-              trigger: badgesRef.current,
-              start: "top 85%",
-              toggleActions: "play none none none",
-              once: true
-            }
+            stagger: 0.2
           }
         );
+
+        master.add(badgesTween, ">");
       }
     },
     { scope: sectionRef }
   );
 
   return (
-    <section
+    <Section
       ref={sectionRef}
-      className="flex w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32"
+      className="flex w-full justify-center mt-32"
+      innerClassName="w-full"
+      useContentWrap={false}
     >
       <div className="content-wrap flex flex-col items-center gap-10 text-center">
         <div className="flex flex-col items-center gap-4">
@@ -196,6 +214,6 @@ export default function OverviewSection() {
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

@@ -1,4 +1,8 @@
-"use client";
+﻿"use client";
+
+import { useRef } from "react";
+import { useSplitScale } from "@/components/typography/useSplitScale";
+import { Section } from "@/components/layout/Section";
 
 const works = [
   {
@@ -15,7 +19,7 @@ const works = [
   },
   {
     title: "Jährlicher Trust-Report für kritische IT-Infrastruktur",
-    description: "Ein unabhängiger Blick auf Risiken, Entscheidungen und Vertrauen.",
+    description: "Ein unabhÃ¤ngiger Blick auf Risiken, Entscheidungen und Vertrauen.",
     image: "/assets/sections/works/trust-reports.png"
   },
   {
@@ -27,30 +31,41 @@ const works = [
 ];
 
 export default function WorksSection() {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  useSplitScale({ scope: sectionRef });
+
   return (
-    <section className="flex w-full flex-col gap-16 px-4 py-16 sm:px-6 lg:px-10 mt-64">
+    <Section
+      ref={sectionRef}
+      className="flex w-full flex-col gap-16 mt-64"
+      innerClassName="w-full"
+      useContentWrap={false}
+    >
       <div className="content-wrap flex flex-col items-center gap-2 text-center">
-        <h2>IDEEN, DIE ZEIGEN, WIE WIR DENKEN</h2>
-        <h3>STRUKTUR STATT SHOW. INSPIRATIONEN AUS UNSERER CREW.</h3>
+        <h2 className="split-scale">IDEEN, DIE ZEIGEN, WIE WIR DENKEN</h2>
+        <h3 className="split-scale">STRUKTUR STATT SHOW. INSPIRATIONEN AUS UNSERER CREW.</h3>
       </div>
 
       <div className="mt-10 grid w-full grid-cols-1 gap-6 md:grid-cols-2">
         {works.map((item, index) => (
           <div
             key={item.title}
-            className={`relative h-[100svh] w-full overflow-hidden bg-cover bg-no-repeat ${index === 0 ? "md:col-span-2" : ""}`}
+            className={`group relative h-[100svh] w-full overflow-hidden bg-cover bg-no-repeat transition ${index === 0 ? "md:col-span-2" : ""}`}
             style={{ backgroundImage: `url("${item.image}")` }}
           >
-            <div className="absolute inset-0 bg-[linear-gradient(0deg,#080716_4.33%,rgba(8,7,22,0.70)_68.27%,rgba(0,0,0,0)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(0deg,#080716_4.33%,rgba(8,7,22,0.70)_68.27%,rgba(0,0,0,0)_100%)] transition-opacity duration-300 ease-out group-hover:opacity-70" />
             <div
               className={
                 "relative z-10 flex h-full flex-col justify-end p-16 " +
                 (index === 0 ? "items-center text-center" : "")
               }
             >
-              <h3 className="text-[20px] font-semibold leading-normal text-white">{item.title}</h3>
+              <h3 className="text-[20px] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case">
+                {item.title}
+              </h3>
               {item.description ? (
-                <p className="mt-2 text-[16px] font-normal leading-normal text-[#DBC18D]">
+                <p className="mt-2 text-[16px] font-normal leading-normal text-[#DBC18D] transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)]">
                   {item.description}
                 </p>
               ) : null}
@@ -58,6 +73,7 @@ export default function WorksSection() {
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
+

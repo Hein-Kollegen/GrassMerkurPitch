@@ -2,6 +2,9 @@
 
 import { useRef } from "react";
 import type { TouchEvent, WheelEvent } from "react";
+import { useSplitLines } from "@/components/typography/useSplitLines";
+import { useSplitScale } from "@/components/typography/useSplitScale";
+import { Section } from "@/components/layout/Section";
 
 const detailSlides = [
   {
@@ -95,6 +98,9 @@ const detailSlides = [
 export default function ModellDetailSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
+  useSplitScale({ scope: sectionRef });
+  useSplitLines({ scope: sectionRef });
+
   const handleListWheel = (event: WheelEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
     const canScroll = target.scrollHeight > target.clientHeight;
@@ -115,13 +121,18 @@ export default function ModellDetailSection() {
   };
 
   return (
-    <section ref={sectionRef} className="flex w-full flex-col items-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
+    <Section
+      ref={sectionRef}
+      className="flex w-full flex-col items-center mt-32"
+      innerClassName="w-full"
+      useContentWrap={false}
+    >
       <div className="content-wrap max-w-[1440px] flex flex-col items-center gap-16 text-center">
         <div className="flex flex-col items-center gap-2">
-          <h2 className="text-balance">DIE 5-S-MODULE IM DETAIL</h2>
-          <h3 className="text-balance font-light">5 MODULE FÜR SICHERES WACHSTUM</h3>
+          <h2 className="split-scale text-balance">DIE 5-S-MODULE IM DETAIL</h2>
+          <h3 className="split-scale text-balance font-light">5 MODULE FÜR SICHERES WACHSTUM</h3>
         </div>
-        <p className="text-balance">
+        <p className="split-lines text-balance">
           Die 5-S-Module sind kein Maßnahmenkatalog. Sie sind ein strukturiertes System, das Wachstum
           planbar macht. Nicht alles gleichzeitig. Aber alles in der richtigen Reihenfolge.
         </p>
@@ -211,6 +222,6 @@ export default function ModellDetailSection() {
           ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

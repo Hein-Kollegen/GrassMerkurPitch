@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitText from "@/components/typography/SplitText";
 import { useSplitScale } from "@/components/typography/useSplitScale";
+import { Section } from "@/components/layout/Section";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -183,9 +184,11 @@ export default function TodayTomorrowSection() {
   };
 
   return (
-    <section
+    <Section
       ref={sectionRef}
-      className="flex min-h-[100svh] w-full justify-center bg-[#080716] p-6 sm:p-10 lg:p-16"
+      className="flex w-full justify-center bg-[#080716]"
+      innerClassName="w-full"
+      useContentWrap={false}
     >
       <div className="content-wrap">
         <div className="flex flex-col gap-16 text-center text-pretty">
@@ -293,6 +296,6 @@ export default function TodayTomorrowSection() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

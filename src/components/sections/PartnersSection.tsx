@@ -115,9 +115,10 @@ export default function PartnersSection() {
 
         gsap.fromTo(
           rowEl,
-          { scale: 0.8, transformOrigin: "center center" },
+          { scale: 0.7, opacity: 0, transformOrigin: "center center" },
           {
             scale: 1,
+            opacity: 1,
             ease: "power2.out",
             scrollTrigger: {
               trigger: rowEl,

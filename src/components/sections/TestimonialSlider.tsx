@@ -10,6 +10,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useSplitLines } from "@/components/typography/useSplitLines";
+import { Section } from "@/components/layout/Section";
 
 const testimonials = [
   {
@@ -75,9 +76,11 @@ export default function TestimonialSlider() {
   );
 
   return (
-    <section
+    <Section
       ref={sectionRef}
-      className="flex min-h-[100svh] w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32"
+      className="flex w-full justify-center mt-32"
+      innerClassName="w-full"
+      useContentWrap={false}
     >
       <div className="content-wrap flex flex-col items-center gap-20 text-center">
         <h2 className="split-lines">KUNDENSTIMMEN</h2>
@@ -124,6 +127,6 @@ export default function TestimonialSlider() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

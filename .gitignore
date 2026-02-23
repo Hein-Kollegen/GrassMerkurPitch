@@ -4,3 +4,5 @@ node_modules
 .DS_Store
 devserver.log
 .agents
+# Logs
+devserver.out.log

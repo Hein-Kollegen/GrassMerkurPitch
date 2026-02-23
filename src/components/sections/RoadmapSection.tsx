@@ -1,4 +1,8 @@
-"use client";
+﻿"use client";
+
+import { useRef } from "react";
+import { useSplitScale } from "@/components/typography/useSplitScale";
+import { Section } from "@/components/layout/Section";
 
 const roadmapCards = [
   {
@@ -7,7 +11,7 @@ const roadmapCards = [
       "Analyse bestehender Prozesse",
       "Bewertung aktueller Sichtbarkeit",
       "Bewertung bestehender Vertriebslogik",
-      "Identifikation struktureller L�cken"
+      "Identifikation struktureller Lücken"
     ]
   },
   {
@@ -22,10 +26,10 @@ const roadmapCards = [
   {
     title: "3. Zielgruppen- & Entscheideranalyse",
     items: [
-      "IT-Leitung vs. Gesch�ftsf�hrung",
+      "IT-Leitung vs. Geschäftsführung",
       "Entscheidungslogiken",
-      "Typische Einw�nde",
-      "Risikoabw�gungen"
+      "Typische Einwände",
+      "Risikoabwägungen"
     ]
   },
   {
@@ -42,30 +46,30 @@ const roadmapCards = [
       "Strukturierung der Produktcluster",
       "Klare Leistungsabgrenzung",
       "Paketlogiken",
-      "Einstiegspunkte f�r Neukunden"
+      "Einstiegspunkte für Neukunden"
     ]
   },
   {
     title: "6. Corporate Identity & Messaging-Rahmen",
     items: [
-      "Sch�rfung Markenauftritt",
-      "Tonalit�t",
+      "Schärfung Markenauftritt",
+      "Tonalität",
       "Claim-/Leitgedankenentwicklung",
-      "Inhaltliche Leitlinien f�r Website & Content"
+      "Inhaltliche Leitlinien für Website & Content"
     ]
   },
   {
     title: "7. Wettbewerbs- & Sichtbarkeitsanalyse",
     items: [
-      "Digitale Pr�senz Wettbewerber",
+      "Digitale Präsenz Wettbewerber",
       "SEO- & LLM-Potenziale",
-      "Positionierungsl�cken im Markt"
+      "Positionierungslücken im Markt"
     ]
   },
   {
     title: "8. Operative Wachstums-Roadmap",
     items: [
-      "Priorisierung der Tools f�r S2 - Sichtbarkeit",
+      "Priorisierung der Tools für S2 - Sichtbarkeit",
       "Definition der ersten Umsetzungsfelder",
       "Budget- & Ressourcenplanung",
       "12-Monats-Wachstumsfahrplan"
@@ -74,11 +78,15 @@ const roadmapCards = [
 ];
 
 export default function RoadmapSection() {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
+  useSplitScale({ scope: sectionRef });
+
   return (
-    <section className="w-full px-6 py-20 sm:px-10 lg:px-16">
+    <Section ref={sectionRef} className="w-full" innerClassName="w-full" useContentWrap={false}>
       <div className="content-wrap flex flex-col items-center gap-3 text-center">
-        <h2>WOLLT IHR MIT UNS GEHEN?</h2>
-        <h3>JA? NEIN? VIELLEICHT? FALLS JA, DANN VIELLEICHT SO?</h3>
+        <h2 className="split-scale">WOLLT IHR MIT UNS GEHEN?</h2>
+        <h3 className="split-scale">JA? NEIN? VIELLEICHT? FALLS JA, DANN VIELLEICHT SO?</h3>
       </div>
 
       <div className="content-wrap mt-32 grid grid-cols-1 gap-y-14 gap-x-32 lg:grid-cols-2">
@@ -99,6 +107,7 @@ export default function RoadmapSection() {
           </div>
         ))}
       </div>
-    </section>
+    </Section>
   );
 }
+
