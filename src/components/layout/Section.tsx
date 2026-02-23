@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { forwardRef } from "react";
 
 type SectionProps = {
@@ -9,7 +10,7 @@ type SectionProps = {
   useContentWrap?: boolean;
   centerY?: boolean;
   children: React.ReactNode;
-};
+} & React.HTMLAttributes<HTMLElement>;
 
 export const Section = forwardRef<HTMLElement, SectionProps>(function Section(
   {
@@ -36,7 +37,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>(function Section(
     : innerClassName;
 
   return (
-    <Component ref={ref} className={outerClassName}>
+    <Component ref={ref as React.Ref<HTMLElement>} className={outerClassName}>
       <div className={innerClasses}>{children}</div>
     </Component>
   );
