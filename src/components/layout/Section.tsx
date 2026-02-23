@@ -23,7 +23,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>(function Section(
   },
   ref
 ) {
-  const Component = as;
+  const Component = as as React.ElementType;
   const outerClassName = [
     "min-h-[100svh] w-full px-8 py-32 flex justify-center",
     centerY ? "items-center" : "",
@@ -37,7 +37,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>(function Section(
     : innerClassName;
 
   return (
-    <Component ref={ref as React.Ref<HTMLElement>} className={outerClassName}>
+    <Component ref={ref as unknown as React.Ref<any>} className={outerClassName}>
       <div className={innerClasses}>{children}</div>
     </Component>
   );
