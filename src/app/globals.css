@@ -112,11 +112,9 @@ body {
   display: flex;
   gap: var(--hero-gap);
   width: max-content;
-  animation: hero-scroll-left 45s linear infinite;
 }
 
 .hero-row-right {
-  animation-direction: reverse;
 }
 
 .hero-marquee-rail {
@@ -128,16 +126,6 @@ body {
 .hero-tile {
   border-radius: 20px;
   overflow: hidden;
-}
-
-@keyframes hero-scroll-left {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
 }
 
 @layer utilities {
