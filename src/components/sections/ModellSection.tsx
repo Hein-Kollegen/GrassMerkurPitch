@@ -100,7 +100,7 @@ export default function ModellSection() {
       return Math.max(0, lastCard.offsetLeft + lastCard.offsetWidth - viewportWidth);
     };
 
-    const mm = ScrollTrigger.matchMedia();
+    const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
       gsap.set(trackRef.current, { x: 0 });
