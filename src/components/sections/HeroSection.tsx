@@ -231,8 +231,8 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col bg-[#080716] px-6 py-10 sm:px-10 lg:px-16">
-      <div className="absolute inset-0 overflow-hidden">
+    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#080716] px-6 py-10 sm:px-10 lg:px-16">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="scale-150 rotate-12">
             <div className="flex flex-col gap-4 opacity-60">

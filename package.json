@@ -10,16 +10,17 @@
   },
   "dependencies": {
     "@gsap/react": "latest",
+    "gsap": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "gsap": "latest"
+    "swiper": "^12.1.2"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "@tailwindcss/postcss": "^4.1.0",
     "autoprefixer": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",

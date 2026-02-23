@@ -1,6 +1,13 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import SplitText from "@/components/typography/SplitText";
+import { useSplitScale } from "@/components/typography/useSplitScale";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type TabKey = "heute" | "potenziale" | "morgen";
 
@@ -23,23 +30,23 @@ const todayItems: Item[] = [
   {
     id: "today-1",
     title: "Drei strategisch verzahnte Geschäftsfelder",
-    subtitle: "Co-Location, Managed Services, Consulting",
+    subtitle: "Co-Location. Managed Services. Consulting.",
     body:
-      "Drei klar definierte Leistungscluster, die Infrastruktur, Betrieb und Beratung verbinden."
+      "Drei klar definierte Leistungscluster, die Infrastruktur, Betrieb und Beratung miteinander verbinden und so ganzheitliche Verantwortung ermöglichen."
   },
   {
     id: "today-2",
     title: "Netzwerkbasierte Kundengewinnung auf Entscheider-Ebene",
     subtitle: "Kein Zufall. Sondern Vertrauen, das sich bewährt hat.",
     body:
-      "Neue Kunden entstehen über ein über Jahre gewachsenes Netzwerk, persönliche Beziehungen und Empfehlungen."
+      "Neue Kunden entstehen über ein über Jahre gewachsenes Netzwerk, persönliche Beziehungen und Empfehlungen zufriedener Bestandskunden."
   },
   {
     id: "today-3",
     title: "Hoher Vertrauensfaktor bei langjährigen Bestandskunden",
     subtitle: "Grass-Merkur entwickelt keine Kunden, sondern Vertrauen.",
     body:
-      "Kunden geben kritische Systeme in die Hände von Grass-Merkur."
+      "Kunden geben kritische Systeme, sensible Daten und unternehmenskritische Prozesse in die Hände von Grass-Merkur. Das ist keine Kunden-Lieferanten-Beziehung. Das ist Vertrauen auf Infrastruktur-Ebene."
   }
 ];
 
@@ -47,7 +54,7 @@ const potentialsItems: Item[] = [
   {
     id: "pot-1",
     title: "Digitale Präsenz in Entscheidungsphasen",
-    subtitle: "Heute entsteht Sichtbarkeit primär über Netzwerke.",
+    subtitle: "Heute entsteht Sichtbarkeit primär über Netzwerk.",
     body:
       "Potenzial liegt in zusätzlicher Präsenz bei Google, in KI-Systemen und auf LinkedIn – dort, wo Entscheider recherchieren und sich absichern."
   },
@@ -61,7 +68,7 @@ const potentialsItems: Item[] = [
   {
     id: "pot-3",
     title: "Regulatorischer Rückenwind als Wachstumshebel",
-    subtitle: "KRITIS & NIS2 erhöhen Handlungsdruck im Markt.",
+    subtitle: "KRITIS & NIS2 erhöhen den Handlungsdruck im Markt.",
     body:
       "Grass-Merkur hat die Kompetenz, sich als Ansprechpartner für sichere, regulatorisch belastbare IT-Infrastruktur zu positionieren."
   }
@@ -71,22 +78,21 @@ const tomorrowItems: Item[] = [
   {
     id: "mor-1",
     title: "Systematische Sichtbarkeit",
-    subtitle: "Grass-Merkur ist bei Entscheidern präsent.",
-    body:
-      "Genau dort, wo Entscheider recherchieren, vergleichen und absichern.",
+    subtitle: "Grass-Merkur ist bei Entscheidern präsent. Genau dort, wo Entscheider recherchieren, vergleichen und absichern.",
+    body: "",
     list: [
       "Google",
       "in KI-gestützten Recherche-Systemen",
       "auf LinkedIn und relevanten Fachplattformen"
     ],
     bodyAfterList:
-      "Nicht personalabhängig, nicht zufallsgesteuert, sondern mit klaren Vertriebssystemen, messbarer Sichtbarkeit und kontinuierlich qualifizierten Anfragen. Wachstum wird planbar."
+      "Nicht personenabhängig, nicht zufallsgetrieben, sondern mit klaren Vertriebssystemen, messbarer Sichtbarkeit und kontinuierlichen qualifizierten Anfragen. Wachstum wird planbar."
   },
   {
     id: "mor-2",
     title: "Klare Positionierung als strategischer IT-Partner",
-    subtitle: "Der Markt nimmt Grass-Merkur als strategischen Partner wahr.",
-    body: "Als vertrauenswürdigen Partner für:",
+    subtitle: "Der Markt nimmt Grass-Merkur als strategischen Partner wahr. Als vertrauenswürdigen Partner für",
+    body: "",
     list: [
       "Hybrid-IT-Architekturen",
       "sichere Cloud-Integration",
@@ -98,8 +104,9 @@ const tomorrowItems: Item[] = [
   {
     id: "mor-3",
     title: "Kompetenzzentrum für sichere, regulatorisch belastbare IT",
-    subtitle: "Grass-Merkur wird Orientierungspunkt für KRITIS- und NIS2-Anforderungen.",
-    body: "Grass-Merkur wird der Ansprechpartner für:",
+    subtitle:
+      "Grass-Merkur wird Orientierungspunkt für KRITIS- und NIS2-Anforderungen. Grass-Merkur wird der Ansprechpartner für:",
+    body: "",
     list: [
       "regulatorische Sicherheit",
       "Compliance",
@@ -131,16 +138,66 @@ const tabs: Tab[] = [
 
 export default function TodayTomorrowSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("heute");
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  useSplitScale({ scope: sectionRef });
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current || !tabsRef.current || !contentRef.current) return;
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (prefersReducedMotion) {
+        gsap.set([tabsRef.current, contentRef.current], { autoAlpha: 1, y: 0 });
+        return;
+      }
+
+      gsap.fromTo(
+        [tabsRef.current, contentRef.current],
+        { autoAlpha: 0, y: 50 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 2,
+          ease: "power3.out",
+          stagger: 0.5,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 70%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    },
+    { scope: sectionRef }
+  );
+
+  const handleTabClick = (key: TabKey) => {
+    if (key === activeTab) return;
+    setActiveTab(key);
+  };
 
   return (
-    <section className="flex min-h-[100svh] w-full justify-center bg-[#080716] p-6 sm:p-10 lg:p-16">
+    <section
+      ref={sectionRef}
+      className="flex min-h-[100svh] w-full justify-center bg-[#080716] p-6 sm:p-10 lg:p-16"
+    >
       <div className="content-wrap">
-        <div className="flex flex-col gap-16 text-center">
-          <h2 className="relative z-[1] text-[clamp(2.6rem,4.5vw,4.25rem)] font-extrabold uppercase tracking-wide text-white [font-family:var(--font-display)]">
-            HEUTE VS. MORGEN
-          </h2>
+        <div className="flex flex-col gap-16 text-center text-pretty">
+          <SplitText
+            text="HEUTE VS. MORGEN"
+            split="words"
+            as="h2"
+            className="split-scale relative z-[1] text-[clamp(2.6rem,4.5vw,4.25rem)] font-extrabold uppercase tracking-wide text-white [font-family:var(--font-display)]"
+            childClassName="inline-block"
+          />
           <div className="flex flex-col gap-8">
-            <div className="flex w-full items-center justify-center pb-8">
+            <div ref={tabsRef} className="flex w-full items-center justify-center pb-8">
               <div className="tabs-glow relative z-[1] flex flex-row items-center gap-4">
                 {tabs.map((tab) => {
                   const isActive = tab.key === activeTab;
@@ -149,7 +206,7 @@ export default function TodayTomorrowSection() {
                     <button
                       key={tab.key}
                       type="button"
-                      onClick={() => setActiveTab(tab.key)}
+                      onClick={() => handleTabClick(tab.key)}
                       className={
                         "relative z-10 rounded-full border border-white/30 px-5 py-2 text-xs uppercase tracking-widest transition-colors duration-300 " +
                         (isActive
@@ -163,7 +220,7 @@ export default function TodayTomorrowSection() {
                 })}
               </div>
             </div>
-            <div className="w-full relative z-[1]">
+            <div ref={contentRef} className="w-full relative z-[1]">
               {tabs.map((tab) => (
                 <div
                   key={tab.key}
@@ -190,7 +247,7 @@ export default function TodayTomorrowSection() {
                         </div>
                         <div className="flex-1">
                           <div className="flex flex-col p-0">
-                            <h3 className="text-[20px] font-semibold text-white [font-family:var(--font-display)]">
+                            <h3 className="text-[20px] font-semibold text-white normal-case [font-family:var(--font-display)]">
                               {item.title}
                             </h3>
                             <h4
@@ -239,6 +296,3 @@ export default function TodayTomorrowSection() {
     </section>
   );
 }
-
-
-

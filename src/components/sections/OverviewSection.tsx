@@ -1,6 +1,13 @@
 ﻿"use client";
 
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { useSplitLines } from "@/components/typography/useSplitLines";
+import { useSplitScale } from "@/components/typography/useSplitScale";
 
 const counters = [
   { value: "50.000+", label: "Zuhörer pro Jahr" },
@@ -19,31 +26,172 @@ const badges = [
 ];
 
 export default function OverviewSection() {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const countersRef = useRef<HTMLDivElement | null>(null);
+  const badgesRef = useRef<HTMLDivElement | null>(null);
+
+  useSplitScale({ scope: sectionRef });
+  useSplitLines({ scope: sectionRef });
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current || !countersRef.current) return;
+
+      gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      const counterEls = gsap.utils.toArray<HTMLElement>(
+        "[data-counter]",
+        sectionRef.current
+      );
+
+      if (!counterEls.length) return;
+
+      if (prefersReducedMotion) {
+        counterEls.forEach((counter) => {
+          const valueEl = counter.querySelector<HTMLElement>("[data-counter-value]");
+          const labelEl = counter.querySelector<HTMLElement>("[data-counter-label]");
+          gsap.set([valueEl, labelEl], { opacity: 1, scale: 1 });
+        });
+
+        const badgeEls = gsap.utils.toArray<HTMLElement>(
+          "[data-badge]",
+          sectionRef.current
+        );
+        gsap.set(badgeEls, { opacity: 1, scale: 1 });
+        return;
+      }
+
+      const master = gsap.timeline({
+        scrollTrigger: {
+          trigger: countersRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+          once: true
+        }
+      });
+
+      const overlap = 1;
+
+      counterEls.forEach((counter, index) => {
+        const valueEl = counter.querySelector<HTMLElement>("[data-counter-value]");
+        const labelEl = counter.querySelector<HTMLElement>("[data-counter-label]");
+        if (!valueEl || !labelEl) return;
+
+        const finalValue = valueEl.textContent ?? "";
+        const valueMatch = finalValue.match(/^([0-9.,]+)(.*)$/);
+        const numericPart = valueMatch ? valueMatch[1] : finalValue;
+        const suffixPart = valueMatch ? valueMatch[2] : "";
+
+        valueEl.textContent = "";
+        const numberSpan = document.createElement("span");
+        numberSpan.setAttribute("data-counter-number", "true");
+        numberSpan.textContent = numericPart;
+        valueEl.appendChild(numberSpan);
+        if (suffixPart) {
+          const suffixSpan = document.createElement("span");
+          suffixSpan.textContent = suffixPart;
+          valueEl.appendChild(suffixSpan);
+        }
+        const tl = gsap.timeline();
+
+        tl.fromTo(
+          numberSpan,
+          {
+            scrambleText: { text: numericPart, chars: "0123456789" }
+          },
+          {
+            scrambleText: { text: numericPart, chars: "0123456789" },
+            duration: 2,
+            ease: "power2.out"
+          }
+        ).fromTo(
+          labelEl,
+          { scale: 0.5, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.8)" },
+          "-=1"
+        );
+
+        master.add(tl, index === 0 ? 0 : `-=${overlap}`);
+      });
+
+      const badgeEls = gsap.utils.toArray<HTMLElement>(
+        "[data-badge]",
+        sectionRef.current
+      );
+
+      if (badgeEls.length && badgesRef.current) {
+        gsap.fromTo(
+          badgeEls,
+          { scale: 0.9, opacity: 0, transformOrigin: "center center" },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+            ease: "power2.out",
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: badgesRef.current,
+              start: "top 85%",
+              toggleActions: "play none none none",
+              once: true
+            }
+          }
+        );
+      }
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section className="flex w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32">
+    <section
+      ref={sectionRef}
+      className="flex w-full justify-center px-6 py-16 sm:px-10 lg:px-16 mt-32"
+    >
       <div className="content-wrap flex flex-col items-center gap-10 text-center">
         <div className="flex flex-col items-center gap-4">
-          <h2>HEIN & KOLLEGEN IM ÜBERBLICK</h2>
-          <h3>WACHSTUM ENTSTEHT, WO RELEVANZ, REICHWEITE UND GLAUBWÜRDIGKEIT ZUSAMMENKOMMEN.</h3>
+          <h2 className="split-scale">HEIN & KOLLEGEN IM ÜBERBLICK</h2>
+          <h3 className="split-lines text-balance">
+            WACHSTUM ENTSTEHT, WO RELEVANZ, REICHWEITE UND GLAUBWÜRDIGKEIT ZUSAMMENKOMMEN.
+          </h3>
         </div>
 
-        <div className="mt-12 flex flex-wrap justify-center gap-8">
+        <div ref={countersRef} className="mt-16 flex flex-wrap justify-between gap-8 w-full">
           {counters.map((counter) => (
-            <div key={counter.value} className="flex min-w-[200px] flex-1 flex-col gap-2 text-center">
-              <div className="text-[64px] font-extrabold uppercase leading-[1] text-white">
+            <div
+              key={counter.value}
+              data-counter
+              className="flex min-w-[200px] flex-1 flex-col gap-2 text-center"
+            >
+              <div
+                data-counter-value
+                className="text-[64px] font-extrabold uppercase leading-[1] text-white"
+              >
                 {counter.value}
               </div>
-              <p className="text-[16px] font-normal text-[#DBC18D]">
+              <p data-counter-label className="text-[16px] font-normal text-[#DBC18D]">
                 {counter.label}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 flex flex-nowrap justify-between gap-6 overflow-x-auto scroll-smooth pr-2">
+        <div
+          ref={badgesRef}
+          className="mt-12 flex flex-nowrap justify-between gap-6 overflow-visible overflow-x-auto scroll-smooth w-full"
+        >
           {badges.map((badge) => (
-            <div key={badge.src} className="relative h-32 w-32 flex-none">
-              <Image src={badge.src} alt={badge.name} fill className="object-contain" />
+            <div key={badge.src} className="relative h-32 w-32 flex-none overflow-visible">
+              <Image
+                src={badge.src}
+                alt={badge.name}
+                fill
+                className="object-contain will-change-transform overflow-visible"
+                data-badge
+              />
             </div>
           ))}
         </div>
@@ -51,4 +199,3 @@ export default function OverviewSection() {
     </section>
   );
 }
-

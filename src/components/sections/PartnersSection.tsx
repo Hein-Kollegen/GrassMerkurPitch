@@ -115,7 +115,7 @@ export default function PartnersSection() {
 
         gsap.fromTo(
           rowEl,
-          { scale: 0.8 },
+          { scale: 0.8, transformOrigin: "center center" },
           {
             scale: 1,
             ease: "power2.out",
