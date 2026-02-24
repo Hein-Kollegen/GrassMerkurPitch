@@ -108,6 +108,7 @@ export default function ModellSection() {
 
     mm.add("(min-width: 1024px)", () => {
       const { startOffset, endOffset, cardWidth, gap } = getOffsets();
+      if (!cardWidth) return;
       const cardsCount = overlayRefs.current.filter(Boolean).length || timelineCards.length;
       const cardStep = cardWidth + gap;
       const moveDistance = Math.abs(endOffset - startOffset);
