@@ -83,21 +83,21 @@ body {
   overflow-x: hidden;
 }
 
-.slide-list-scroll {
+* {
   scrollbar-color: #dbc18d #080716;
   scrollbar-width: thin;
 }
 
-.slide-list-scroll::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 6px;
 }
 
-.slide-list-scroll::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: #080716;
   border-radius: 999px;
 }
 
-.slide-list-scroll::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background: #dbc18d;
   border-radius: 999px;
 }
@@ -105,7 +105,7 @@ body {
 .hero-bg-mask {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8, 7, 22, 0.2) 0%, rgba(8, 7, 22, 0.6) 35%, rgba(8, 7, 22, 0.85) 60%, rgba(8, 7, 22, 1) 100%);
+  background: linear-gradient(0deg, rgba(8, 7, 22, 0.3) 30%, rgba(8, 7, 22, 0.9) 100%);
 }
 
 .hero-marquee-track {
@@ -131,6 +131,32 @@ body {
   .content-wrap {
     @apply w-full max-w-[1280px] mx-auto;
   }
+}
+
+.card-gradient-hover {
+  position: relative;
+  overflow: hidden;
+  background: var(--card-bg, #080716);
+}
+
+.card-gradient-hover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--card-hover-bg, #080716);
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+
+.card-gradient-hover:hover::before {
+  opacity: 1;
+}
+
+.card-gradient-hover .card-content {
+  position: relative;
+  z-index: 1;
 }
 
 .tabs-glow {

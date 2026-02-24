@@ -1,6 +1,9 @@
 ﻿"use client";
 
 import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSplitScale } from "@/components/typography/useSplitScale";
 import { Section } from "@/components/layout/Section";
 
@@ -79,8 +82,46 @@ const roadmapCards = [
 
 export default function RoadmapSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
 
   useSplitScale({ scope: sectionRef });
+
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (prefersReducedMotion) {
+        gsap.set(cardsRef.current, { autoAlpha: 1, scale: 1 });
+        return;
+      }
+
+      cardsRef.current.forEach((card) => {
+        if (!card) return;
+        gsap.fromTo(
+          card,
+          { autoAlpha: 0, scale: 0.5 },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "center center",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      });
+    },
+    { scope: sectionRef }
+  );
 
   return (
     <Section ref={sectionRef} className="w-full" innerClassName="w-full" useContentWrap={false}>
@@ -93,21 +134,25 @@ export default function RoadmapSection() {
         {roadmapCards.map((card, index) => (
           <div
             key={card.title}
+            ref={(el) => {
+              cardsRef.current[index] = el;
+            }}
             className={
-              "flex flex-col justify-center rounded-[40px] border border-[#DBC18D]/30 bg-[#080716] p-16 transition-[border-color,background,transform] duration-300 ease-out hover:bg-[linear-gradient(90deg,#082940_0%,#080716_100%)] " +
-              (index % 2 === 1 ? "lg:translate-y-24" : "")
+              "card-gradient-hover flex flex-col justify-center rounded-[40px] border border-[#DBC18D]/30 p-16 transition-[border-color] duration-300 ease-out [--card-bg:linear-gradient(90deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(90deg,#082940_0%,#080716_100%)] " +
+              (index % 2 === 1 ? "lg:translate-y-1/2" : "")
             }
           >
-            <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
-            <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
-              {card.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            <div className="card-content">
+              <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
+              <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
+                {card.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         ))}
       </div>
     </Section>
   );
 }
-

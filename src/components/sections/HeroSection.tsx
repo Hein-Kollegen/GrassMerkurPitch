@@ -256,9 +256,9 @@ export default function HeroSection() {
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="flex flex-col items-center gap-8 text-center">
+          <div className="flex flex-col items-center gap-12 text-center">
             <HeroTypedTitle />
-            <p className="m-0 max-w-2xl text-[clamp(1rem,1.2vw,1.25rem)] wrap-balance font-medium text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] [font-family:var(--font-display)]">
+            <p className="m-0 text-[clamp(1rem,1.2vw,1.25rem)] font-medium text-white text-shadow-[0_3px_10px_rgba(0,0,0,0.8)] [font-family:var(--font-display)]">
               {"Ein System für Wachstum, Umsatz, Mitarbeitergewinnung und Planbarkeit für Grass-Merkur."}
             </p>
           </div>

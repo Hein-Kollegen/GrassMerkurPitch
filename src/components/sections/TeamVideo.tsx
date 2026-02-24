@@ -6,10 +6,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSplitLines } from "@/components/typography/useSplitLines";
 import { useSplitScale } from "@/components/typography/useSplitScale";
-import { Section } from "@/components/layout/Section";
 
 export default function TeamVideo() {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const videoWrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -124,11 +123,9 @@ export default function TeamVideo() {
   };
 
   return (
-    <Section
+    <section
       ref={sectionRef}
-      className="flex w-full flex-col mt-32 items-center"
-      innerClassName="w-full"
-      useContentWrap={false}
+      className="mt-32 flex w-full flex-col items-center"
     >
       <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <div className="flex flex-col gap-2">
@@ -174,7 +171,7 @@ export default function TeamVideo() {
           </span>
         </button>
       </div>
-    </Section>
+    </section>
   );
 }
 

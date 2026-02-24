@@ -237,39 +237,43 @@ export default function ModellSection() {
         <div ref={viewportRef} className="overflow-visible">
           <div
             ref={trackRef}
-            className="flex min-w-max items-start gap-6 pb-6 will-change-transform cursor-grab select-none touch-pan-y active:cursor-grabbing"
+            className="flex min-w-max items-start gap-6 pb-6 will-change-transform select-none touch-pan-y active:cursor-grabbing"
           >
             {timelineCards.map((card, index) => (
               <div
                 key={card.title}
                 data-timeline-card
                 className={
-                  "relative flex min-h-[260px] w-[85vw] flex-none flex-col gap-4 rounded-[50px] border border-[#DBC18D]/30 bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] p-10 transition-[border-color,background] duration-300 ease-out hover:bg-[linear-gradient(90deg,#082940_0%,#080716_100%)] sm:w-[70vw] lg:w-[calc((min(1440px,100vw)-3rem)/3)] " +
+                  "card-gradient-hover relative flex min-h-[260px] w-[85vw] flex-none flex-col rounded-[50px] border border-[#DBC18D]/30 p-10 transition-[border-color] duration-300 ease-out [--card-bg:linear-gradient(90deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(90deg,#082940_0%,#080716_100%)] sm:w-[70vw] lg:w-[calc((min(1440px,100vw)-3rem)/3)] " +
                   (index % 2 === 0 ? "self-start" : "self-end mt-20")
                 }
               >
-                <div className="absolute right-4 top-4 h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
+                <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-2">
                     <img src={card.iconSrc} alt="" className="h-16 w-16 object-contain rounded-full" />
                   </div>
                 </div>
-                <h3 className="text-left text-[30px] font-medium uppercase text-white">
-                  {card.title}
-                </h3>
-                <h4 className="mt-1 text-left text-[20px] font-medium text-white">
-                  {card.subline}
-                </h4>
-                <p className="text-left text-[16px] font-normal leading-normal text-[#DBC18D]">
-                  {card.body}
-                </p>
-                <ul className="mt-1 list-disc space-y-1 pl-5 text-left text-[16px] font-normal text-white">
-                  {card.list.map((entry) => (
-                    <li key={entry}>{entry}</li>
-                  ))}
-                </ul>
-                <p className="text-left text-[16px] font-normal leading-normal text-white">
-                  {card.footer}
-                </p>
+                <div className="card-content gap-6 flex flex-col">
+                  <h3 className="text-left text-[30px] font-medium uppercase text-white">
+                    {card.title}
+                  </h3>
+                  <div className="flex flex-col">
+                    <h4 className="mt-1 text-left text-[20px] font-medium text-white">
+                      {card.subline}
+                    </h4>
+                    <p className="text-left text-[16px] font-normal leading-normal text-[#DBC18D]">
+                      {card.body}
+                    </p>
+                  </div>
+                  <ul className="mt-1 list-disc space-y-1 pl-5 text-left text-[16px] font-normal text-white">
+                    {card.list.map((entry) => (
+                      <li key={entry}>{entry}</li>
+                    ))}
+                  </ul>
+                  <p className="text-left text-[16px] font-normal leading-normal text-white">
+                    {card.footer}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
