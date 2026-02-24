@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -38,7 +39,7 @@ const testimonials = [
 export default function TestimonialSlider() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
-  const swiperRef = useRef<Swiper | null>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
 
   useSplitLines({ scope: sectionRef });
 
