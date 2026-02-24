@@ -1,26 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import SplitText from "@/components/typography/SplitText";
 
-const TEXTS = ["Das ist kein Pitch.", "Das ist ein System."];
+const TEXTS = ["kein Pitch.", "ein System."];
 
-const heroImages = [
-  "/assets/sections/hero/hero-bg (1).png",
-  "/assets/sections/hero/hero-bg (2).png",
-  "/assets/sections/hero/hero-bg (3).png",
-  "/assets/sections/hero/hero-bg (4).png",
-  "/assets/sections/hero/hero-bg (5).png",
-  "/assets/sections/hero/hero-bg (6).png",
-  "/assets/sections/hero/hero-bg (7).png",
-  "/assets/sections/hero/hero-bg (8).png",
-  "/assets/sections/hero/hero-bg (9).png",
-  "/assets/sections/hero/hero-bg (10).png",
-  "/assets/sections/hero/hero-bg (11).png",
-  "/assets/sections/hero/hero-bg (12).png"
-];
 
 function HeroTypedTitle() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -28,120 +14,119 @@ function HeroTypedTitle() {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const delayedRef = useRef<gsap.core.Tween | null>(null);
 
-  useGSAP(
-    () => {
-      let index = 0;
-      let isMounted = true;
+  useEffect(() => {
+    let index = 0;
+    let isMounted = true;
 
-      const run = () => {
-        if (!isMounted) return;
-        setText(TEXTS[index]);
+    const run = () => {
+      if (!isMounted) return;
+      const nextText = TEXTS[index];
+      setText(nextText);
 
-        requestAnimationFrame(() => {
-          if (!containerRef.current) return;
-          const chars = containerRef.current.querySelectorAll<HTMLElement>(
-            "[data-split-child]"
-          );
+      requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+        const chars = containerRef.current.querySelectorAll<HTMLElement>(
+          "[data-split-child]"
+        );
 
-          timelineRef.current?.kill();
-          delayedRef.current?.kill();
-          gsap.set(chars, { opacity: 0, y: -14 });
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              index = (index + 1) % TEXTS.length;
-              delayedRef.current = gsap.delayedCall(0.3, run);
-            }
-          });
-          timelineRef.current = tl;
-
-          tl.to(chars, {
-            opacity: 1,
-            y: 0,
-            duration: 0.45,
-            stagger: 0.03,
-            ease: "power2.out"
-          })
-            .to(chars, { duration: 4 })
-            .to(chars, {
-              opacity: 0,
-              y: 14,
-              duration: 0.35,
-              stagger: {
-                each: 0.02,
-                from: "end"
-              },
-              ease: "power2.in"
-            });
-        });
-      };
-
-      run();
-
-      return () => {
-        isMounted = false;
         timelineRef.current?.kill();
         delayedRef.current?.kill();
-      };
-    },
-    { scope: containerRef }
-  );
+        gsap.set(chars, { opacity: 0, x: -14 });
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            index = (index + 1) % TEXTS.length;
+            delayedRef.current = gsap.delayedCall(0.3, run);
+          }
+        });
+        timelineRef.current = tl;
+
+        tl.to(chars, {
+          opacity: 1,
+          x: 0,
+          duration: 0.45,
+          stagger: 0.03,
+          ease: "power2.out"
+        })
+          .to(chars, { duration: 3 })
+          .to(chars, {
+            opacity: 0,
+            x: -14,
+            duration: 0.35,
+            stagger: {
+              each: 0.02,
+              from: "end"
+            },
+            ease: "power2.in"
+          });
+      });
+    };
+
+    run();
+
+    return () => {
+      isMounted = false;
+      timelineRef.current?.kill();
+      delayedRef.current?.kill();
+    };
+  }, []);
 
   return (
-    <div ref={containerRef}>
-      <SplitText
-        text={text}
-        split="chars"
-        as="h1"
-        className="m-0 text-h1 font-extrabold uppercase text-white"
-        childClassName="inline-block"
-      />
-    </div>
-  );
-}
-
-function HeroRow({
-  images,
-  direction,
-  rowIndex,
-  trackRefs
-}: {
-  images: string[];
-  direction: "left" | "right";
-  rowIndex: number;
-  trackRefs: React.MutableRefObject<Array<HTMLDivElement | null>>;
-}) {
-  return (
-    <div>
-      <div
-        ref={(el) => {
-          trackRefs.current[rowIndex] = el;
-        }}
-        className={`hero-marquee-track ${direction === "left" ? "hero-row-left" : "hero-row-right"
-          }`}
-      >
-        {[0, 1].map((dup) => (
-          <div key={dup} className="hero-marquee-rail">
-            {images.map((src, index) => (
-              <div key={`${src}-${dup}-${index}`} className="hero-tile">
-                <img src={src} alt="" className="w-[22rem] aspect-video object-cover" />
-              </div>
-            ))}
-          </div>
-        ))}
+    <span className="relative inline-block">
+      <div ref={containerRef} className="inline-block">
+        <SplitText
+          text={text}
+          split="chars"
+          as="h1"
+          className="m-0 text-h1 font-extrabold uppercase text-white"
+          childClassName="inline-block"
+        />
       </div>
-    </div>
+    </span>
   );
 }
 
 export default function HeroSection() {
-  const rows = [
-    heroImages.slice(0, 4),
-    heroImages.slice(4, 8),
-    heroImages.slice(8, 12),
-    [heroImages[1], heroImages[3], heroImages[5], heroImages[7]]
-  ];
+  const marqueeRef = useRef<HTMLDivElement | null>(null);
   const trackRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const rows = [
+    {
+      direction: "left",
+      images: [
+        "/assets/sections/hero/marquee-1.jpg",
+        "/assets/sections/hero/marquee-2.png",
+        "/assets/sections/hero/marquee-3.png",
+        "/assets/sections/hero/marquee-4.png"
+      ]
+    },
+    {
+      direction: "right",
+      images: [
+        "/assets/sections/hero/marquee-5.png",
+        "/assets/sections/hero/marquee-6.png",
+        "/assets/sections/hero/marquee-7.png",
+        "/assets/sections/hero/marquee-8.png"
+      ]
+    },
+    {
+      direction: "left",
+      images: [
+        "/assets/sections/hero/marquee-9.png",
+        "/assets/sections/hero/marquee-10.png",
+        "/assets/sections/hero/marquee-11.png",
+        "/assets/sections/hero/marquee-12.png"
+      ]
+    },
+    {
+      direction: "right",
+      images: [
+        "/assets/sections/hero/marquee-1.jpg",
+        "/assets/sections/hero/marquee-2.png",
+        "/assets/sections/hero/marquee-3.png",
+        "/assets/sections/hero/marquee-4.png"
+      ]
+    }
+  ];
 
   useGSAP(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -152,101 +137,78 @@ export default function HeroSection() {
       return;
     }
 
-    let tweens: gsap.core.Tween[] = [];
-    let resizeTimer: number | undefined;
-
-    const cleanupTracks = () => {
-      tweens.forEach((tween) => tween.kill());
-      tweens = [];
-
-      trackRefs.current.forEach((trackEl) => {
-        if (!trackEl) return;
-        const rails = trackEl.querySelectorAll(".hero-marquee-rail");
-        rails.forEach((rail, railIndex) => {
-          if (railIndex > 1) {
-            rail.remove();
-          }
-        });
-        gsap.set(trackEl, { x: 0, willChange: "auto" });
-      });
-    };
-
-    const setupTracks = () => {
-      cleanupTracks();
-
-      trackRefs.current.forEach((trackEl, index) => {
-        if (!trackEl) return;
-        const rails = trackEl.querySelectorAll<HTMLDivElement>(".hero-marquee-rail");
-        if (!rails.length) return;
-
-        const firstRail = rails[0];
-        const railWidth = firstRail.getBoundingClientRect().width;
-        if (!railWidth) return;
-
-        const minWidth = window.innerWidth * 2;
-
-        while (trackEl.scrollWidth < minWidth) {
-          const clone = firstRail.cloneNode(true) as HTMLDivElement;
-          trackEl.appendChild(clone);
+    const tweens = trackRefs.current
+      .map((track, index) => {
+        if (!track) return null;
+        if (index % 2 === 1) {
+          return gsap.fromTo(
+            track,
+            { x: "-50%" },
+            {
+              x: "0%",
+              duration: 70,
+              ease: "none",
+              repeat: -1
+            }
+          );
         }
 
-        const direction = index % 2 === 0 ? "left" : "right";
-        const wrap = direction === "left"
-          ? gsap.utils.wrap(-railWidth, 0)
-          : gsap.utils.wrap(0, railWidth);
-
-        gsap.set(trackEl, { x: 0, willChange: "transform" });
-
-        const tween = gsap.to(trackEl, {
-          x: direction === "left" ? `-=${railWidth}` : `+=${railWidth}`,
-          duration: 55,
+        return gsap.to(track, {
+          x: "-=50%",
+          duration: 70,
           ease: "none",
-          repeat: -1,
-          modifiers: {
-            x: (value) => {
-              const numeric = parseFloat(value);
-              return `${wrap(numeric)}px`;
-            }
-          }
+          repeat: -1
         });
-
-        tweens.push(tween);
-      });
-    };
-
-    setupTracks();
-
-    const onResize = () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(setupTracks, 150);
-    };
-
-    window.addEventListener("resize", onResize);
+      })
+      .filter(Boolean) as gsap.core.Tween[];
 
     return () => {
-      window.removeEventListener("resize", onResize);
-      window.clearTimeout(resizeTimer);
-      cleanupTracks();
+      tweens.forEach((tween) => tween.kill());
     };
-  }, []);
+  }, { scope: marqueeRef });
 
   return (
     <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#080716] px-6 py-10 sm:px-10 lg:px-16">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="scale-150 rotate-12">
-            <div className="flex flex-col gap-4 opacity-60">
-              <HeroRow images={rows[0]} direction="left" rowIndex={0} trackRefs={trackRefs} />
-              <HeroRow images={rows[1]} direction="right" rowIndex={1} trackRefs={trackRefs} />
-              <HeroRow images={rows[2]} direction="left" rowIndex={2} trackRefs={trackRefs} />
-              <HeroRow images={rows[3]} direction="right" rowIndex={3} trackRefs={trackRefs} />
+      <div
+        ref={marqueeRef}
+        className="absolute inset-0 overflow-hidden pointer-events-none marquee-container z-0"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(0deg,rgba(8,7,22,0.30)_30%,rgba(8,7,22,0.90)_100%)]" />
+        <div className="marquee h-full w-full grid grid-rows-4 gap-4 z-0 relative scale-[1.5] rotate-[13deg] opacity-[0.7]">
+          {rows.map((row, rowIndex) => (
+            <div
+              key={`marquee-row-${rowIndex}`}
+              ref={(el) => {
+                trackRefs.current[rowIndex] = el;
+              }}
+              className="marquee-track flex w-[200vw] gap-4"
+            >
+              <div className="marquee-group grid grid-cols-4 items-stretch gap-4 h-full w-full">
+                {row.images.map((src, imageIndex) => (
+                  <div
+                    key={`marquee-row-${rowIndex}-image-${imageIndex}`}
+                    className="marquee-item rounded-xl overflow-hidden"
+                  >
+                    <img src={src} alt="" className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              <div className="marquee-group grid grid-cols-4 items-stretch gap-4 h-full w-full">
+                {row.images.map((src, imageIndex) => (
+                  <div
+                    key={`marquee-row-${rowIndex}-image-dup-${imageIndex}`}
+                    className="marquee-item rounded-xl overflow-hidden"
+                  >
+                    <img src={src} alt="" className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-        <div className="hero-bg-mask" />
       </div>
-
-      <div className="content-wrap relative z-10 flex flex-1 flex-col">
+      <div className="content-wrap relative z-20 flex flex-1 flex-col">
         <div className="flex w-full justify-center pt-4 sm:pt-6">
           <img
             src="/assets/page/hk-logo.svg"
@@ -257,7 +219,10 @@ export default function HeroSection() {
 
         <div className="flex flex-1 flex-col items-center justify-center text-center">
           <div className="flex flex-col items-center gap-12 text-center">
-            <HeroTypedTitle />
+            <div className="relative flex items-center gap-3">
+              <h1 className="m-0 text-h1 font-extrabold uppercase text-white">Das ist</h1>
+              <HeroTypedTitle />
+            </div>
             <p className="m-0 text-[clamp(1rem,1.2vw,1.25rem)] font-medium text-white text-shadow-[0_3px_10px_rgba(0,0,0,0.8)] [font-family:var(--font-display)]">
               {"Ein System für Wachstum, Umsatz, Mitarbeitergewinnung und Planbarkeit für Grass-Merkur."}
             </p>

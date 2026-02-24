@@ -25,7 +25,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>(function Section(
 ) {
   const Component = as as React.ElementType;
   const outerClassName = [
-    "min-h-[100svh] w-full px-8 py-32 flex justify-center",
+    "min-h-[100svh] w-full px-8 flex justify-center",
     centerY ? "items-center" : "",
     className
   ]

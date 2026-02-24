@@ -92,15 +92,15 @@ export default function PartnersSection() {
         return;
       }
 
-      gsap.set(rowsRef.current, { yPercent: 100, willChange: "transform" });
+      gsap.set(rowsRef.current, { yPercent: 60, willChange: "transform" });
 
       gsap.to(rowsRef.current, {
-        yPercent: -100,
+        yPercent: -40,
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=100%",
+          end: "+=40%",
           scrub: true,
           pin: true,
           invalidateOnRefresh: true

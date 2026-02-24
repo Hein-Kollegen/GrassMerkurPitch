@@ -38,8 +38,8 @@ export default function WorksSection() {
   return (
     <Section
       ref={sectionRef}
-      className="flex w-full flex-col gap-16 mt-64"
-      innerClassName="w-full"
+      className="w-full mt-48"
+      innerClassName="flex w-full flex-col gap-32"
       useContentWrap={false}
     >
       <div className="content-wrap flex flex-col items-center gap-2 text-center">

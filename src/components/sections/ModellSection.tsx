@@ -83,6 +83,7 @@ export default function ModellSection() {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const draggableRef = useRef<Draggable | null>(null);
+  const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useSplitScale({ scope: sectionRef });
   useSplitLines({ scope: sectionRef });
@@ -92,35 +93,60 @@ export default function ModellSection() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const getDistance = () => {
+    const getOffsets = () => {
       const viewportWidth = viewportRef.current?.clientWidth ?? 0;
-      const cards = trackRef.current?.querySelectorAll<HTMLElement>("[data-timeline-card]");
-      const lastCard = cards && cards.length ? cards[cards.length - 1] : null;
-      if (!lastCard) return 0;
-      return Math.max(0, lastCard.offsetLeft + lastCard.offsetWidth - viewportWidth);
+      const firstCard = trackRef.current?.querySelector<HTMLElement>("[data-timeline-card]");
+      if (!firstCard) return { startOffset: 0, endOffset: 0 };
+      const cardWidth = firstCard.getBoundingClientRect().width;
+      const gap = 24;
+      const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
+      const endOffset = startOffset - (2 * (cardWidth + gap));
+      return { startOffset, endOffset, cardWidth, gap };
     };
 
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      gsap.set(trackRef.current, { x: 0 });
+      const { startOffset, endOffset, cardWidth, gap } = getOffsets();
+      const cardsCount = overlayRefs.current.filter(Boolean).length || timelineCards.length;
+      const cardStep = cardWidth + gap;
+      const moveDistance = Math.abs(endOffset - startOffset);
+      const stepLength = moveDistance / 2;
+      const totalDistance = stepLength * 5;
 
-      const tween = gsap.to(trackRef.current, {
-        x: () => -getDistance(),
-        ease: "none",
+      gsap.set(trackRef.current, { x: startOffset });
+
+      const setHighlight = (index: number) => {
+        overlayRefs.current.forEach((overlay, overlayIndex) => {
+          if (!overlay) return;
+          gsap.set(overlay, { opacity: overlayIndex === index ? 1 : 0 });
+        });
+      };
+
+      const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: viewportRef.current,
           start: "center center",
-          end: () => `+=${getDistance()}`,
+          end: () => `+=${totalDistance}`,
           scrub: true,
           pin: true,
-          anticipatePin: 1,
           invalidateOnRefresh: true
         }
       });
 
+      timeline.call(() => setHighlight(0), [], 0);
+      timeline.to(trackRef.current, { x: startOffset, duration: 1, ease: "none" });
+      timeline.call(() => setHighlight(1));
+      timeline.to(trackRef.current, { x: startOffset - cardStep, duration: 1, ease: "none" });
+      timeline.call(() => setHighlight(2));
+      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+      timeline.call(() => setHighlight(3));
+      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+      timeline.call(() => setHighlight(4));
+      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+
       return () => {
-        tween.kill();
+        timeline.kill();
       };
     });
 
@@ -138,10 +164,19 @@ export default function ModellSection() {
     let resizeObserver: ResizeObserver | null = null;
 
     const updateBounds = () => {
-      const viewportWidth = viewportRef.current?.clientWidth ?? 0;
-      const trackWidth = trackRef.current?.scrollWidth ?? 0;
-      const minX = Math.min(0, viewportWidth - trackWidth);
-      const maxX = 0;
+      if (!trackRef.current) return;
+      const { startOffset, endOffset } = (() => {
+        const viewportWidth = viewportRef.current?.clientWidth ?? 0;
+        const firstCard = trackRef.current?.querySelector<HTMLElement>("[data-timeline-card]");
+        if (!firstCard) return { startOffset: 0, endOffset: 0 };
+        const cardWidth = firstCard.getBoundingClientRect().width;
+        const gap = 24;
+        const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
+        const endOffset = startOffset - (2 * (cardWidth + gap));
+        return { startOffset, endOffset };
+      })();
+      const minX = Math.min(endOffset, startOffset);
+      const maxX = Math.max(endOffset, startOffset);
       draggableRef.current?.applyBounds({ minX, maxX });
       draggableRef.current?.update();
     };
@@ -233,7 +268,7 @@ export default function ModellSection() {
           </p>
         </div>
       </div>
-      <div className="content-wrap max-w-[1440px] mt-32 w-full">
+      <div className="content-wrap max-w-[1440px] mt-48 w-full">
         <div ref={viewportRef} className="overflow-visible">
           <div
             ref={trackRef}
@@ -244,16 +279,22 @@ export default function ModellSection() {
                 key={card.title}
                 data-timeline-card
                 className={
-                  "card-gradient-hover relative flex min-h-[260px] w-[85vw] flex-none flex-col rounded-[50px] border border-[#DBC18D]/30 p-10 transition-[border-color] duration-300 ease-out [--card-bg:linear-gradient(90deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(90deg,#082940_0%,#080716_100%)] sm:w-[70vw] lg:w-[calc((min(1440px,100vw)-3rem)/3)] " +
+                  "relative flex min-h-[260px] w-[85vw] flex-none flex-col rounded-[50px] border border-[#DBC18D]/30 p-10 transition-[border-color] duration-300 ease-out overflow-hidden bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] sm:w-[70vw] lg:w-[calc((min(1440px,100vw)-3rem)/3)] " +
                   (index % 2 === 0 ? "self-start" : "self-end mt-20")
                 }
               >
+                <div
+                  ref={(el) => {
+                    overlayRefs.current[index] = el;
+                  }}
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
+                />
                 <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-2">
                     <img src={card.iconSrc} alt="" className="h-16 w-16 object-contain rounded-full" />
                   </div>
                 </div>
-                <div className="card-content gap-6 flex flex-col">
+                <div className="relative z-[1] gap-6 flex flex-col">
                   <h3 className="text-left text-[30px] font-medium uppercase text-white">
                     {card.title}
                   </h3>

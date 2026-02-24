@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useSplitLines } from "@/components/typography/useSplitLines";
@@ -38,6 +38,7 @@ const testimonials = [
 export default function TestimonialSlider() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
+  const swiperRef = useRef<Swiper | null>(null);
 
   useSplitLines({ scope: sectionRef });
 
@@ -56,6 +57,8 @@ export default function TestimonialSlider() {
         return;
       }
 
+      if (!sectionRef.current || !swiperRef.current) return;
+
       gsap.fromTo(
         sliderRef.current,
         { opacity: 0, y: 40 },
@@ -71,6 +74,24 @@ export default function TestimonialSlider() {
           }
         }
       );
+
+      const slidesCount = testimonials.length;
+      const steps = slidesCount;
+      const holdSteps = 1;
+      const stepLength = 400;
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "center center",
+        end: () => `+=${stepLength * (steps + holdSteps)}`,
+        pin: true,
+        scrub: true,
+        onUpdate: (self) => {
+          const progressStep = Math.floor(self.progress * steps);
+          const targetIndex = Math.max(0, Math.min(steps - 1, progressStep));
+          swiperRef.current?.slideTo(targetIndex, 600);
+        }
+      });
     },
     { scope: sectionRef }
   );
@@ -78,23 +99,26 @@ export default function TestimonialSlider() {
   return (
     <Section
       ref={sectionRef}
-      className="flex w-full justify-center mt-32"
+      className="flex w-full justify-center align-center"
       innerClassName="w-full"
       useContentWrap={false}
+      centerY={true}
     >
-      <div className="content-wrap flex flex-col items-center gap-20 text-center">
+      <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <h2 className="split-lines">KUNDENSTIMMEN</h2>
 
         <div ref={sliderRef} className="relative w-full">
           <div className="relative mx-auto h-full max-w-5xl">
             <Swiper
-              modules={[Autoplay, Pagination]}
-              loop
+              modules={[Pagination]}
+              loop={false}
               speed={700}
               grabCursor
-              autoplay={{ delay: 9000, disableOnInteraction: true }}
               pagination={{ clickable: true, el: ".testimonial-pagination" }}
               className="testimonial-swiper h-full"
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
             >
               {testimonials.map((item) => (
                 <SwiperSlide key={item.name} className="flex flex-col">

@@ -83,6 +83,7 @@ const roadmapCards = [
 export default function RoadmapSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useSplitScale({ scope: sectionRef });
 
@@ -101,7 +102,21 @@ export default function RoadmapSection() {
         return;
       }
 
-      cardsRef.current.forEach((card) => {
+      const setHighlight = (activeIndex: number | null) => {
+        overlayRefs.current.forEach((overlay, index) => {
+          if (!overlay) return;
+          const isActive = index === activeIndex;
+          overlay.dataset.active = isActive ? "true" : "false";
+          gsap.set(overlay, { opacity: isActive ? 1 : 0 });
+        });
+      };
+
+      overlayRefs.current.forEach((overlay) => {
+        if (!overlay) return;
+        gsap.set(overlay, { opacity: 0 });
+      });
+
+      cardsRef.current.forEach((card, index) => {
         if (!card) return;
         gsap.fromTo(
           card,
@@ -114,17 +129,24 @@ export default function RoadmapSection() {
             scrollTrigger: {
               trigger: card,
               start: "center center",
-              toggleActions: "play none none none"
+              end: "center bottom",
+              toggleActions: "play none reverse none",
+              onEnter: () => setHighlight(index),
+              onLeaveBack: () => setHighlight(index)
             }
           }
         );
       });
+
+      return () => {
+        setHighlight(null);
+      };
     },
     { scope: sectionRef }
   );
 
   return (
-    <Section ref={sectionRef} className="w-full" innerClassName="w-full" useContentWrap={false}>
+    <Section ref={sectionRef} className="w-full mt-64" innerClassName="w-full" useContentWrap={false}>
       <div className="content-wrap flex flex-col items-center gap-3 text-center">
         <h2 className="split-scale">WOLLT IHR MIT UNS GEHEN?</h2>
         <h3 className="split-scale">JA? NEIN? VIELLEICHT? FALLS JA, DANN VIELLEICHT SO?</h3>
@@ -138,11 +160,18 @@ export default function RoadmapSection() {
               cardsRef.current[index] = el;
             }}
             className={
-              "card-gradient-hover flex flex-col justify-center rounded-[40px] border border-[#DBC18D]/30 p-16 transition-[border-color] duration-300 ease-out [--card-bg:linear-gradient(90deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(90deg,#082940_0%,#080716_100%)] " +
+              "relative flex flex-col justify-center overflow-hidden rounded-[40px] border border-[#DBC18D]/30 p-16 transition-[border-color] duration-300 ease-out bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] " +
               (index % 2 === 1 ? "lg:translate-y-1/2" : "")
             }
           >
-            <div className="card-content">
+            <div
+              ref={(el) => {
+                overlayRefs.current[index] = el;
+              }}
+              data-active="false"
+              className="roadmap-overlay absolute inset-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
+            />
+            <div className="relative z-[1]">
               <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
               <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
                 {card.items.map((item) => (

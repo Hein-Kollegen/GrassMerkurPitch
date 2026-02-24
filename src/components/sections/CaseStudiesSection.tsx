@@ -35,6 +35,7 @@ const cases = [
 export default function CaseStudiesSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
+  const lastPlayedRef = useRef(-1);
 
   useSplitScale({ scope: sectionRef });
 
@@ -67,7 +68,6 @@ export default function CaseStudiesSection() {
       }
 
       gsap.set(cards, { autoAlpha: 0, scaleY: 0, transformOrigin: "top center" });
-      const cardOverlap = 0.8;
 
       cards.forEach((card, index) => {
         const bg = card.querySelector<HTMLElement>("[data-case-bg]");
@@ -80,22 +80,17 @@ export default function CaseStudiesSection() {
         }
       });
 
-      const master = gsap.timeline({
-        scrollTrigger: {
-          trigger: gridRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
-          once: true
-        }
-      });
+      const steps = cards.length;
+      const holdSteps = 1;
+      const stepLength = 400;
 
-      cards.forEach((card, index) => {
+      const timelines = cards.map((card) => {
         const bg = card.querySelector<HTMLElement>("[data-case-bg]");
         const logo = card.querySelector<HTMLElement>("[data-case-logo]");
         const text = card.querySelector<HTMLElement>("[data-case-text]");
         const mockup = card.querySelector<HTMLElement>("[data-case-mockup]");
 
-        const tl = gsap.timeline();
+        const tl = gsap.timeline({ paused: true });
         tl.to(logo, { autoAlpha: 1, duration: 0.25 })
           .to(card, { autoAlpha: 1, scaleY: 1, duration: 0.4, ease: "power2.out" }, "-=0.1");
 
@@ -107,8 +102,45 @@ export default function CaseStudiesSection() {
           .to(mockup, { autoAlpha: 1, duration: 0.2, ease: "power1.out" }, "-=0.1")
           .to(mockup, { y: 0, duration: 1.5, ease: "elastic.out(1, 0.4)" }, "<");
 
-        master.add(tl, index === 0 ? 0 : `-=${cardOverlap}`);
+        return tl;
       });
+
+      lastPlayedRef.current = -1;
+
+      const trigger = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "center center",
+        end: () => `+=${stepLength * (steps + holdSteps)}`,
+        scrub: false,
+        pin: true,
+        pinSpacing: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const totalSteps = steps + holdSteps;
+          const rawIndex = Math.floor(self.progress * totalSteps) - 1;
+          const stepIndex = Math.max(-1, Math.min(steps - 1, rawIndex));
+
+          if (stepIndex > lastPlayedRef.current) {
+            while (lastPlayedRef.current < stepIndex) {
+              lastPlayedRef.current += 1;
+              timelines[lastPlayedRef.current]?.play(0);
+            }
+            return;
+          }
+
+          if (stepIndex < lastPlayedRef.current) {
+            while (lastPlayedRef.current > stepIndex) {
+              timelines[lastPlayedRef.current]?.reverse();
+              lastPlayedRef.current -= 1;
+            }
+          }
+        }
+      });
+
+      return () => {
+        trigger.kill();
+        timelines.forEach((tl) => tl.kill());
+      };
     },
     { scope: sectionRef }
   );
@@ -116,11 +148,11 @@ export default function CaseStudiesSection() {
   return (
     <Section
       ref={sectionRef}
-      className="flex w-full justify-center mt-32"
+      className="flex w-full justify-center mt-16"
       innerClassName="w-full"
       useContentWrap={false}
     >
-      <div className="content-wrap flex flex-col items-center gap-20 text-center">
+      <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <h2 className="split-scale">ERFOLGSGESCHICHTEN</h2>
 
         <div

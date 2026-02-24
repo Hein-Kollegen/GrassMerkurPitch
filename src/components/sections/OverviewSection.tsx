@@ -110,7 +110,7 @@ export default function OverviewSection() {
           {
             opacity: 1,
             scrambleText: { text: numericPart, chars: "0123456789" },
-            duration: 2,
+            duration: 1.5,
             ease: "power2.out"
           }
         );
@@ -132,7 +132,7 @@ export default function OverviewSection() {
           labelEl,
           { scale: 0.5, opacity: 0 },
           { scale: 1, opacity: 1, duration: 1, ease: "elastic.out(1, 0.8)" },
-          "-=1"
+          "-=1.5"
         );
 
         master.add(tl, index === 0 ? 0 : `-=${overlap}`);
@@ -150,9 +150,9 @@ export default function OverviewSection() {
           {
             scale: 1,
             opacity: 1,
-            duration: 1,
+            duration: 0.8,
             ease: "power2.out",
-            stagger: 0.2
+            stagger: 0.1
           }
         );
 
@@ -168,8 +168,9 @@ export default function OverviewSection() {
       className="flex w-full justify-center mt-32"
       innerClassName="w-full"
       useContentWrap={false}
+      centerY={true}
     >
-      <div className="content-wrap flex flex-col items-center gap-10 text-center">
+      <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <div className="flex flex-col items-center gap-4">
           <h2 className="split-scale">HEIN & KOLLEGEN IM ÜBERBLICK</h2>
           <h3 className="split-lines text-balance">
@@ -177,7 +178,7 @@ export default function OverviewSection() {
           </h3>
         </div>
 
-        <div ref={countersRef} className="mt-16 flex flex-wrap justify-between gap-8 w-full">
+        <div ref={countersRef} className="flex justify-between gap-8 w-full mt-16">
           {counters.map((counter) => (
             <div
               key={counter.value}
@@ -199,7 +200,7 @@ export default function OverviewSection() {
 
         <div
           ref={badgesRef}
-          className="mt-12 flex flex-nowrap justify-between gap-6 overflow-visible overflow-x-auto scroll-smooth w-full"
+          className="flex flex-nowrap justify-between gap-6 overflow-visible overflow-x-auto scroll-smooth w-full"
         >
           {badges.map((badge) => (
             <div key={badge.src} className="relative h-32 w-32 flex-none overflow-visible">

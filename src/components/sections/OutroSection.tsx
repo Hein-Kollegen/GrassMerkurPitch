@@ -5,7 +5,7 @@ import { Section } from "@/components/layout/Section";
 export default function OutroSection() {
   return (
     <Section
-      className="mt-16 bg-[#080716]"
+      className="mt-48 bg-[#080716]"
       innerClassName="w-full flex items-center justify-center"
       centerY
       useContentWrap={false}

@@ -125,7 +125,7 @@ export default function TeamVideo() {
   return (
     <section
       ref={sectionRef}
-      className="mt-32 flex w-full flex-col items-center"
+      className="mt-80 flex w-full flex-col items-center gap-48"
     >
       <div className="content-wrap flex flex-col items-center gap-16 text-center">
         <div className="flex flex-col gap-2">
@@ -142,7 +142,7 @@ export default function TeamVideo() {
 
       <div
         ref={videoWrapRef}
-        className="relative mt-32 h-[100svh] w-screen overflow-hidden bg-[#080716]"
+        className="relative h-[100svh] w-screen overflow-hidden bg-[#080716]"
       >
         <video
           ref={videoRef}
