@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger, DrawSVGPlugin } from "@/lib/gsap";
 import { useSplitScale } from "@/components/typography/useSplitScale";
 import { Section } from "@/components/layout/Section";
 
@@ -82,6 +81,9 @@ const roadmapCards = [
 
 export default function RoadmapSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const pathSvgRef = useRef<SVGSVGElement | null>(null);
+  const pathRef = useRef<SVGPathElement | null>(null);
   const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
   const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
 
@@ -89,16 +91,64 @@ export default function RoadmapSection() {
 
   useGSAP(
     () => {
-      if (!sectionRef.current) return;
+      if (!sectionRef.current || !gridRef.current) return;
 
-      gsap.registerPlugin(ScrollTrigger);
+      gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches;
 
+      const updatePathGeometry = () => {
+        if (!gridRef.current || !pathSvgRef.current || !pathRef.current) return;
+
+        const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
+        if (!cards.length) return;
+
+        const gridStyles = window.getComputedStyle(gridRef.current);
+        const parsedColumnGap = parseFloat(gridStyles.columnGap || "0");
+        const laneWidth = Number.isFinite(parsedColumnGap) && parsedColumnGap > 0
+          ? parsedColumnGap
+          : 128;
+
+        const gridRect = gridRef.current.getBoundingClientRect();
+        const laneLeft = (gridRect.width - laneWidth) / 2;
+        const laneRight = laneLeft + laneWidth;
+
+        pathSvgRef.current.style.width = `${laneWidth}px`;
+        pathSvgRef.current.setAttribute("data-lane-width", `${laneWidth}`);
+
+        const anchors = cards.map((card, index) => {
+          const cardRect = card.getBoundingClientRect();
+          const isOddSlide = (index + 1) % 2 === 1;
+          const x = isOddSlide ? laneLeft - laneLeft : laneRight - laneLeft;
+
+          return {
+            x,
+            y: cardRect.top - gridRect.top + cardRect.height / 2
+          };
+        });
+
+        if (anchors.length < 2) return;
+
+        const d = anchors
+          .map((point, index) =>
+            `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`
+          )
+          .join(" ");
+
+        pathSvgRef.current.setAttribute("viewBox", `0 0 ${laneWidth} ${gridRect.height}`);
+        pathRef.current.setAttribute("d", d);
+      };
+
       if (prefersReducedMotion) {
         gsap.set(cardsRef.current, { autoAlpha: 1, scale: 1 });
+        if (window.matchMedia("(min-width: 1024px)").matches) {
+          updatePathGeometry();
+          if (pathRef.current) {
+            gsap.set(pathRef.current, { drawSVG: "100%" });
+          }
+        }
         return;
       }
 
@@ -138,7 +188,43 @@ export default function RoadmapSection() {
         );
       });
 
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        const firstCard = cardsRef.current[0];
+        const lastCard = cardsRef.current[cardsRef.current.length - 1];
+        const path = pathRef.current;
+
+        if (!firstCard || !lastCard || !path) return;
+
+        updatePathGeometry();
+
+        const drawTween = gsap.fromTo(
+          path,
+          { drawSVG: "0%" },
+          {
+            drawSVG: "100%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: firstCard,
+              start: "center center",
+              endTrigger: lastCard,
+              end: "center center",
+              scrub: 0.6,
+              invalidateOnRefresh: true,
+              onRefreshInit: updatePathGeometry,
+              onRefresh: updatePathGeometry
+            }
+          }
+        );
+
+        return () => {
+          drawTween.kill();
+        };
+      });
+
       return () => {
+        mm.revert();
         setHighlight(null);
       };
     },
@@ -152,35 +238,53 @@ export default function RoadmapSection() {
         <h3 className="split-scale">JA? NEIN? VIELLEICHT? FALLS JA, DANN VIELLEICHT SO?</h3>
       </div>
 
-      <div className="content-wrap mt-32 grid grid-cols-1 gap-y-14 gap-x-32 lg:grid-cols-2">
-        {roadmapCards.map((card, index) => (
-          <div
-            key={card.title}
-            ref={(el) => {
-              cardsRef.current[index] = el;
-            }}
-            className={
-              "relative flex flex-col justify-center overflow-hidden rounded-[40px] border border-[#DBC18D]/30 p-16 transition-[border-color] duration-300 ease-out bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] " +
-              (index % 2 === 1 ? "lg:translate-y-1/2" : "")
-            }
-          >
+      <div ref={gridRef} className="content-wrap relative mt-32">
+        <svg
+          ref={pathSvgRef}
+          className="pointer-events-none absolute bottom-0 left-1/2 top-0 z-0 hidden -translate-x-1/2 lg:block"
+          aria-hidden="true"
+        >
+          <path
+            ref={pathRef}
+            fill="none"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="1"
+            strokeDasharray="5 5"
+            strokeLinecap="butt"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        <div className="relative z-10 grid grid-cols-1 gap-x-32 gap-y-14 lg:grid-cols-2">
+          {roadmapCards.map((card, index) => (
             <div
+              key={card.title}
               ref={(el) => {
-                overlayRefs.current[index] = el;
+                cardsRef.current[index] = el;
               }}
-              data-active="false"
-              className="roadmap-overlay absolute inset-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
-            />
-            <div className="relative z-[1]">
-              <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
-              <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
-                {card.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              className={
+                "relative z-10 flex flex-col justify-center overflow-hidden rounded-[40px] border border-[#DBC18D]/30 bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] p-16 transition-[border-color] duration-300 ease-out " +
+                (index % 2 === 1 ? "lg:translate-y-1/2" : "")
+              }
+            >
+              <div
+                ref={(el) => {
+                  overlayRefs.current[index] = el;
+                }}
+                data-active="false"
+                className="roadmap-overlay absolute inset-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
+              />
+              <div className="relative z-[1]">
+                <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
+                <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
+                  {card.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </Section>
   );
