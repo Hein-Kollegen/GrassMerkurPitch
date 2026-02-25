@@ -144,19 +144,12 @@ export default function OverviewSection() {
       );
 
       if (badgeEls.length && badgesRef.current) {
-        const badgesTween = gsap.fromTo(
+        master.fromTo(
           badgeEls,
           { scale: 0.9, opacity: 0, transformOrigin: "center center" },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power2.out",
-            stagger: 0.1
-          }
+          { scale: 1, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.1 },
+          "-=0.5"
         );
-
-        master.add(badgesTween, ">");
       }
     },
     { scope: sectionRef }

@@ -1,7 +1,10 @@
 ﻿"use client";
 
 import { useRef } from "react";
-import type { TouchEvent, WheelEvent } from "react";
+import type { TouchEvent as ReactTouchEvent, WheelEvent as ReactWheelEvent } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSplitLines } from "@/components/typography/useSplitLines";
 import { useSplitScale } from "@/components/typography/useSplitScale";
 import { Section } from "@/components/layout/Section";
@@ -97,11 +100,164 @@ const detailSlides = [
 
 export default function ModellDetailSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const stackRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const listRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const activeIndexRef = useRef(0);
+  const isAnimatingRef = useRef(false);
 
   useSplitScale({ scope: sectionRef });
   useSplitLines({ scope: sectionRef });
 
-  const handleListWheel = (event: WheelEvent<HTMLDivElement>) => {
+  useGSAP(
+    () => {
+      if (!stackRef.current) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (prefersReducedMotion) return;
+
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        if (!stackRef.current) return;
+
+        const cards = cardRefs.current.filter(Boolean) as HTMLDivElement[];
+        if (!cards.length) return;
+
+        const count = cards.length;
+
+        cards.forEach((card, index) => {
+          gsap.set(card, {
+            yPercent: index === 0 ? 0 : 100,
+            autoAlpha: index === 0 ? 1 : 0,
+            zIndex: index + 1
+          });
+        });
+
+        let trigger: ScrollTrigger | null = null;
+        let touchStartY = 0;
+
+        const clampIndex = (value: number) =>
+          Math.min(count - 1, Math.max(0, value));
+
+        const animateToIndex = (targetIndex: number) => {
+          if (isAnimatingRef.current) return;
+
+          const currentIndex = activeIndexRef.current;
+          if (targetIndex === currentIndex) return;
+
+          const direction = targetIndex > currentIndex ? 1 : -1;
+          const nextCard = cards[targetIndex];
+          const currentCard = cards[currentIndex];
+
+          isAnimatingRef.current = true;
+
+          const tl = gsap.timeline({
+            defaults: { duration: 0.6, ease: "power2.out" },
+            onComplete: () => {
+              activeIndexRef.current = targetIndex;
+              isAnimatingRef.current = false;
+              const desired = clampIndex(
+                Math.round((trigger?.progress ?? 0) * (count - 1))
+              );
+              if (desired !== activeIndexRef.current) {
+                animateToIndex(desired);
+              }
+            }
+          });
+
+          if (direction > 0) {
+            gsap.set(nextCard, { yPercent: 100, autoAlpha: 1 });
+            tl.to(nextCard, { yPercent: 0 });
+          } else {
+            tl.to(currentCard, { yPercent: 100, autoAlpha: 0 });
+            gsap.set(nextCard, { yPercent: 0, autoAlpha: 1 });
+          }
+        };
+
+        trigger = ScrollTrigger.create({
+          trigger: stackRef.current,
+          start: "top top",
+          end: () => `+=${(count - 1) * window.innerHeight}`,
+          pin: true,
+          pinSpacing: true,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const nextIndex = clampIndex(Math.round(self.progress * (count - 1)));
+            if (!isAnimatingRef.current && nextIndex !== activeIndexRef.current) {
+              animateToIndex(nextIndex);
+            }
+          }
+        });
+
+        const canScrollList = (listEl: HTMLDivElement | null) => {
+          if (!listEl) return false;
+          return listEl.scrollHeight > listEl.clientHeight + 1;
+        };
+
+        const handleWheel = (event: WheelEvent) => {
+          if (!trigger?.isActive || isAnimatingRef.current) return;
+          const listEl = listRefs.current[activeIndexRef.current];
+          if (!listEl || !canScrollList(listEl)) return;
+
+          const delta = event.deltaY;
+          const atTop = listEl.scrollTop <= 0;
+          const atBottom =
+            listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 1;
+
+          if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
+            event.preventDefault();
+            listEl.scrollTop += delta;
+          }
+        };
+
+        const handleTouchStart = (event: TouchEvent) => {
+          touchStartY = event.touches[0]?.clientY ?? 0;
+        };
+
+        const handleTouchMove = (event: TouchEvent) => {
+          if (!trigger?.isActive || isAnimatingRef.current) return;
+          const listEl = listRefs.current[activeIndexRef.current];
+          if (!listEl || !canScrollList(listEl)) return;
+
+          const currentY = event.touches[0]?.clientY ?? 0;
+          const delta = touchStartY - currentY;
+          const atTop = listEl.scrollTop <= 0;
+          const atBottom =
+            listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 1;
+
+          if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
+            event.preventDefault();
+            listEl.scrollTop += delta;
+            touchStartY = currentY;
+          }
+        };
+
+        window.addEventListener("wheel", handleWheel, { passive: false });
+        window.addEventListener("touchstart", handleTouchStart, { passive: true });
+        window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+        return () => {
+          window.removeEventListener("wheel", handleWheel);
+          window.removeEventListener("touchstart", handleTouchStart);
+          window.removeEventListener("touchmove", handleTouchMove);
+          trigger?.kill();
+        };
+      });
+
+      return () => {
+        mm.revert();
+      };
+    },
+    { scope: sectionRef }
+  );
+
+  const handleListWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
     const canScroll = target.scrollHeight > target.clientHeight;
     if (!canScroll) return;
@@ -112,7 +268,7 @@ export default function ModellDetailSection() {
     }
   };
 
-  const handleListTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+  const handleListTouchMove = (event: ReactTouchEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
     const canScroll = target.scrollHeight > target.clientHeight;
     if (canScroll) {
@@ -137,81 +293,92 @@ export default function ModellDetailSection() {
           planbar macht. Nicht alles gleichzeitig. Aber alles in der richtigen Reihenfolge.
         </p>
       </div>
-      <div className="content-wrap mt-24 w-full">
-        <div className="flex w-full flex-col gap-10">
-          {detailSlides.map((slide) => (
+      <div className="mt-24 w-full">
+        <div
+          ref={stackRef}
+          className="relative w-full flex flex-col gap-10 lg:block lg:h-[100svh] lg:w-[100vw] lg:overflow-hidden"
+        >
+          {detailSlides.map((slide, index) => (
             <div
               key={slide.title}
-              className="flex h-[90svh] w-full items-center justify-center overflow-hidden bg-[#080716]"
+              ref={(el) => {
+                cardRefs.current[index] = el;
+              }}
+              className="flex h-[90svh] w-full items-center justify-center overflow-hidden bg-[#080716] lg:absolute lg:inset-0 lg:h-[100svh] lg:w-[100vw]"
             >
-              <div
-                className="relative h-[90svh] w-full overflow-hidden rounded-[20px] border border-[#37515F] bg-[#080716]"
-                style={
-                  slide.mediaType === "bg"
-                    ? {
-                      backgroundImage: `url(${slide.mediaSrc})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center"
-                    }
-                    : undefined
-                }
-              >
-                {slide.mediaType === "video" ? (
-                  <video
-                    className="absolute inset-0 h-full w-full object-cover"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    src={slide.mediaSrc}
-                  />
-                ) : null}
-                <div className="h-full w-full">
-                  <div className="grid h-full grid-cols-2">
-                    <div className="relative h-full w-full">
-                      {slide.mediaType === "image" ? (
-                        <img
-                          src={slide.mediaSrc}
-                          alt=""
-                          className="absolute inset-0 h-full w-full object-contain object-left"
-                        />
-                      ) : null}
-                    </div>
-                    <div
-                      className={
-                        "flex h-full flex-col justify-center px-10 " +
-                        (slide.panelStyle === "overlay"
-                          ? "bg-[linear-gradient(270deg,rgba(8,7,22,0.60)_0%,#080716_100%)] backdrop-blur-md"
-                          : "")
+              <div className="content-wrap w-full">
+                <div
+                  className="relative h-[90svh] w-full overflow-hidden rounded-[20px] border border-[#37515F] bg-[#080716]"
+                  style={
+                    slide.mediaType === "bg"
+                      ? {
+                        backgroundImage: `url(${slide.mediaSrc})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
                       }
-                    >
-                      <div className="flex h-full flex-col justify-center gap-8">
-                        <h3 className="text-left text-balance font-semibold">{slide.title}</h3>
-                        <div className="flex flex-col gap-2">
-                          <h4 className="text-left text-[20px] text-balance font-semibold">
-                            {slide.subline}
-                          </h4>
-                          <p className="text-left text-balance text-[#DBC18D]">{slide.body}</p>
-                        </div>
-                        <div
-                          className="slide-list-scroll mt-6 flex max-h-[220px] flex-col gap-4 overflow-y-auto overflow-x-hidden overscroll-contain pr-2"
-                          onWheel={handleListWheel}
-                          onTouchMove={handleListTouchMove}
-                        >
-                          {slide.list.map((entry) => (
-                            <div key={entry} className="flex flex-nowrap items-center gap-4">
-                              <span className="flex h-[41px] w-[41px] flex-none items-center justify-center rounded-full border border-[#DBC18D42]">
-                                <img
-                                  src="/assets/sections/modell-detail/arrow-icon.svg"
-                                  alt=""
-                                  className="h-[11px] w-[11px]"
-                                />
-                              </span>
-                              <p className="min-w-0 flex-shrink flex-grow-0 rounded-[30px] border border-[#DBC18D42] px-4 py-2 text-left text-balance">
-                                {entry}
-                              </p>
-                            </div>
-                          ))}
+                      : undefined
+                  }
+                >
+                  {slide.mediaType === "video" ? (
+                    <video
+                      className="absolute inset-0 h-full w-full object-cover"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      src={slide.mediaSrc}
+                    />
+                  ) : null}
+                  <div className="h-full w-full">
+                    <div className="grid h-full grid-cols-2">
+                      <div className="relative h-full w-full">
+                        {slide.mediaType === "image" ? (
+                          <img
+                            src={slide.mediaSrc}
+                            alt=""
+                            className="absolute inset-0 h-full w-full object-contain object-left"
+                          />
+                        ) : null}
+                      </div>
+                      <div
+                        className={
+                          "flex h-full flex-col justify-center px-10 " +
+                          (slide.panelStyle === "overlay"
+                            ? "bg-[linear-gradient(270deg,rgba(8,7,22,0.60)_0%,#080716_100%)] backdrop-blur-md"
+                            : "")
+                        }
+                      >
+                        <div className="flex h-full flex-col justify-center gap-8 py-16">
+                          <h3 className="text-left text-balance font-semibold">{slide.title}</h3>
+                          <div className="flex flex-col gap-2">
+                            <h4 className="text-left text-[20px] text-balance font-semibold">
+                              {slide.subline}
+                            </h4>
+                            <p className="text-left text-balance text-[#DBC18D]">{slide.body}</p>
+                          </div>
+                          <div
+                            ref={(el) => {
+                              listRefs.current[index] = el;
+                            }}
+                            className="slide-list-scroll mt-6 flex max-h-[250px] flex-col gap-4 overflow-y-auto overflow-x-hidden overscroll-contain pr-2"
+                            onWheel={handleListWheel}
+                            onTouchMove={handleListTouchMove}
+                          >
+                            {slide.list.map((entry) => (
+                              <div key={entry} className="flex flex-nowrap items-center gap-4">
+                                <span className="flex h-[41px] w-[41px] flex-none items-center justify-center rounded-full border border-[#DBC18D42]">
+                                  <img
+                                    src="/assets/sections/modell-detail/arrow-icon.svg"
+                                    alt=""
+                                    className="h-[11px] w-[11px]"
+                                  />
+                                </span>
+                                <p className="min-w-0 flex-shrink flex-grow-0 rounded-[30px] border border-[#DBC18D42] px-4 py-2 text-left text-balance">
+                                  {entry}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
