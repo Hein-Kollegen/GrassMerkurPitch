@@ -251,39 +251,39 @@ export default function TodayTomorrowSection() {
                           </div>
                           <div className="flex-1">
                             <div className="flex flex-col p-0">
-                              <h3 className="text-[20px] font-semibold text-white normal-case [font-family:var(--font-display)]">
+                              <h3 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold text-white normal-case [font-family:var(--font-display)]">
                                 {item.title}
                               </h3>
                               <h4
                                 className={
-                                  "text-[16px] text-[#DBC18D] [font-family:var(--font-display)] " +
+                                  "text-[clamp(1rem,1.05vw,1.125rem)] text-[#DBC18D] [font-family:var(--font-display)] " +
                                   (tab.key === "morgen" ? "font-bold" : "font-normal")
                                 }
                               >
                                 {item.subtitle}
                               </h4>
                               {tab.key === "morgen" && item.body ? (
-                                <p className="text-[16px] font-normal text-[#DBC18D] [font-family:var(--font-display)]">
+                                <p className="text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-[#DBC18D] [font-family:var(--font-display)]">
                                   {item.body}
                                 </p>
                               ) : null}
                             </div>
                             {tab.key !== "morgen" && item.body ? (
-                              <p className="mt-4 text-[16px] font-normal text-white [font-family:var(--font-display)]">
+                              <p className="mt-4 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.body}
                               </p>
                             ) : null}
                             {item.list ? (
-                              <ul className="mt-4 list-disc pl-5 text-[16px] font-normal text-white [font-family:var(--font-display)]">
+                              <ul className="mt-4 list-disc pl-5 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.list.map((entry) => (
-                                  <li key={entry} className="text-[16px]">
+                                  <li key={entry} className="text-[clamp(1rem,1.05vw,1.125rem)]">
                                     {entry}
                                   </li>
                                 ))}
                               </ul>
                             ) : null}
                             {item.bodyAfterList ? (
-                              <p className="mt-4 text-[16px] font-normal text-white [font-family:var(--font-display)]">
+                              <p className="mt-4 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.bodyAfterList}
                               </p>
                             ) : null}

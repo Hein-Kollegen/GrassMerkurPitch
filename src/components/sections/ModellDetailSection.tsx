@@ -409,7 +409,7 @@ export default function ModellDetailSection() {
                         <div className="flex h-full flex-col justify-center gap-8 py-16">
                           <h3 className="text-left text-balance font-semibold">{slide.title}</h3>
                           <div className="flex flex-col gap-2">
-                            <h4 className="text-left text-[20px] text-balance font-semibold">
+                            <h4 className="text-left text-[clamp(1.125rem,1.45vw,1.25rem)] text-balance font-semibold">
                               {slide.subline}
                             </h4>
                             <p className="text-left text-balance text-[#DBC18D]">{slide.body}</p>

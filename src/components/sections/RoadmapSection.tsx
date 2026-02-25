@@ -275,8 +275,8 @@ export default function RoadmapSection() {
                 className="roadmap-overlay absolute inset-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
               />
               <div className="relative z-[1]">
-                <h4 className="text-[20px] font-semibold text-white">{card.title}</h4>
-                <ul className="mt-4 list-disc space-y-1 pl-5 text-[16px] font-normal leading-normal text-[#DBC18D]">
+                <h4 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold text-white">{card.title}</h4>
+                <ul className="mt-4 list-disc space-y-1 pl-5 text-[clamp(1rem,1.05vw,1.125rem)] font-normal leading-normal text-[#DBC18D]">
                   {card.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}

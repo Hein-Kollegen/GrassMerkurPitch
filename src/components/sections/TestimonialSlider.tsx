@@ -124,7 +124,7 @@ export default function TestimonialSlider() {
               {testimonials.map((item) => (
                 <SwiperSlide key={item.name} className="flex flex-col">
                   <div className="flex-grow flex flex-col justify-center align-center">
-                    <p className="text-center text-[48px] font-light leading-[1.25] text-white">
+                    <p className="text-center text-[clamp(2rem,3.8vw,3rem)] font-light leading-[1.25] text-white">
                       {item.quote}
                     </p>
                   </div>
@@ -134,10 +134,10 @@ export default function TestimonialSlider() {
                       <Image src={item.logo} alt={item.name} fill className="object-contain" />
                     </div>
                     <p className="text-white">
-                      <strong className="text-[22px] font-semibold mr-4">{item.name}</strong>{" "}
-                      <span className="text-[22px] font-light">{item.role}</span>
+                      <strong className="text-[clamp(1.125rem,1.6vw,1.375rem)] font-semibold mr-4">{item.name}</strong>{" "}
+                      <span className="text-[clamp(1.125rem,1.6vw,1.375rem)] font-light">{item.role}</span>
                     </p>
-                    <div className="flex items-center gap-1 text-[30px]">
+                    <div className="flex items-center gap-1 text-[clamp(1.375rem,2.4vw,1.875rem)]">
                       {Array.from({ length: 5 }).map((_, starIndex) => (
                         <span key={starIndex} className="text-[#DBC18D]">
                           ★

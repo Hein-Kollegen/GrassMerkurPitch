@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import Draggable from "gsap/Draggable";
+import { Draggable } from "gsap/all";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitText from "@/components/typography/SplitText";
 import { useSplitScale } from "@/components/typography/useSplitScale";
@@ -82,7 +82,7 @@ export default function ModellSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const draggableRef = useRef<Draggable | null>(null);
+  const draggableRef = useRef<any>(null);
   const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useSplitScale({ scope: sectionRef });
@@ -132,7 +132,7 @@ export default function ModellSection() {
       const { cardWidth } = getMetrics();
       if (!cardWidth || !trackRef.current || !viewportRef.current) return;
 
-      let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+      let resizeTimer: number | null = null;
       const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
       const delayedRefreshId = window.setTimeout(() => ScrollTrigger.refresh(), 150);
 
@@ -180,7 +180,7 @@ export default function ModellSection() {
 
       const handleViewportChange = () => {
         if (resizeTimer) {
-          clearTimeout(resizeTimer);
+          window.clearTimeout(resizeTimer);
         }
         resizeTimer = window.setTimeout(() => {
           ScrollTrigger.refresh();
@@ -192,7 +192,7 @@ export default function ModellSection() {
 
       return () => {
         if (resizeTimer) {
-          clearTimeout(resizeTimer);
+          window.clearTimeout(resizeTimer);
         }
         cancelAnimationFrame(rafId);
         window.clearTimeout(delayedRefreshId);
@@ -338,23 +338,23 @@ export default function ModellSection() {
                   </div>
                 </div>
                 <div className="relative z-[1] gap-6 flex flex-col">
-                  <h3 className="text-left text-[30px] font-medium uppercase text-white">
+                  <h3 className="text-left text-[clamp(1.375rem,2.4vw,1.875rem)] font-medium uppercase text-white">
                     {card.title}
                   </h3>
                   <div className="flex flex-col">
-                    <h4 className="mt-1 text-left text-[20px] font-medium text-white">
+                    <h4 className="mt-1 text-left text-[clamp(1.125rem,1.45vw,1.25rem)] font-medium text-white">
                       {card.subline}
                     </h4>
-                    <p className="text-left text-[16px] font-normal leading-normal text-[#DBC18D]">
+                    <p className="text-left text-[clamp(1rem,1.05vw,1.125rem)] font-normal leading-normal text-[#DBC18D]">
                       {card.body}
                     </p>
                   </div>
-                  <ul className="mt-1 list-disc space-y-1 pl-5 text-left text-[16px] font-normal text-white">
+                  <ul className="mt-1 list-disc space-y-1 pl-5 text-left text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white">
                     {card.list.map((entry) => (
                       <li key={entry}>{entry}</li>
                     ))}
                   </ul>
-                  <p className="text-left text-[16px] font-normal leading-normal text-white">
+                  <p className="text-left text-[clamp(1rem,1.05vw,1.125rem)] font-normal leading-normal text-white">
                     {card.footer}
                   </p>
                 </div>

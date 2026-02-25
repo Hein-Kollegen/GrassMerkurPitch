@@ -180,11 +180,11 @@ export default function OverviewSection() {
             >
               <div
                 data-counter-value
-                className="text-[64px] font-extrabold uppercase leading-[1] text-white"
+                className="text-[clamp(2.5rem,5vw,4rem)] font-extrabold uppercase leading-[1] text-white"
               >
                 {counter.value}
               </div>
-              <p data-counter-label className="text-[16px] font-normal text-[#DBC18D]">
+              <p data-counter-label className="text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-[#DBC18D]">
                 {counter.label}
               </p>
             </div>

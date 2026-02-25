@@ -96,3 +96,37 @@
 ✓ Compiled in 1080ms
 ✓ Compiled in 447ms
 ✓ Compiled in 374ms
+✓ Compiled in 325ms
+ GET / 200 in 1319ms (compile: 522ms, render: 796ms)
+✓ Compiled in 364ms
+✓ Compiled in 181ms
+✓ Compiled in 325ms
+✓ Compiled in 101ms
+ GET / 200 in 1213ms (compile: 356ms, render: 857ms)
+✓ Compiled in 227ms
+ GET / 200 in 815ms (compile: 243ms, render: 572ms)
+ GET / 200 in 267ms (compile: 13ms, render: 254ms)
+✓ Compiled in 126ms
+✓ Compiled in 131ms
+✓ Compiled in 155ms
+✓ Compiled in 201ms
+✓ Compiled in 103ms
+✓ Compiled in 99ms
+✓ Compiled in 269ms
+✓ Compiled in 282ms
+✓ Compiled in 218ms
+✓ Compiled in 256ms
+✓ Compiled in 186ms
+✓ Compiled in 204ms
+✓ Compiled in 201ms
+✓ Compiled in 430ms
+✓ Compiled in 238ms
+✓ Compiled in 124ms
+ GET / 200 in 2.3s (compile: 914ms, render: 1402ms)
+✓ Compiled in 505ms
+ GET / 200 in 1420ms (compile: 500ms, render: 919ms)
+✓ Compiled in 1122ms
+✓ Compiled in 890ms
+ GET / 200 in 192ms (compile: 36ms, render: 156ms)
+ GET / 200 in 316ms (compile: 7ms, render: 309ms)
+✓ Compiled in 1623ms

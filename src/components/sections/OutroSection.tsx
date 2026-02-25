@@ -16,7 +16,7 @@ export default function OutroSection() {
           alt="Hein & Kollegen"
           className="h-[64px] w-auto"
         />
-        <div className="text-[40px] tracking-[0.2em] text-[#DBC18D]" aria-label="5 stars">
+        <div className="text-[clamp(1.75rem,3.2vw,2.5rem)] tracking-[0.2em] text-[#DBC18D]" aria-label="5 stars">
           ★★★★★
         </div>
       </div>

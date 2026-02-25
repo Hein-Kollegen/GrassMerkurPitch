@@ -166,7 +166,7 @@ export default function CaseStudiesSection() {
                       <Image src={item.logo} alt={item.title} fill className="object-contain" />
                     </div>
                     <div data-case-text className="flex flex-col gap-2">
-                      <h4 className="text-center text-[20px] font-bold leading-[28px] text-white">
+                      <h4 className="text-center text-[clamp(1.125rem,1.45vw,1.25rem)] font-bold leading-[28px] text-white">
                         {item.subtitle}
                       </h4>
                       <p className="text-center text-white">{item.description}</p>

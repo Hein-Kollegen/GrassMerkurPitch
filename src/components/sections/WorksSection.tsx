@@ -61,11 +61,11 @@ export default function WorksSection() {
                 (index === 0 ? "items-center text-center" : "")
               }
             >
-              <h3 className="text-[20px] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case">
+              <h3 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case">
                 {item.title}
               </h3>
               {item.description ? (
-                <p className="mt-2 text-[16px] font-normal leading-normal text-[#DBC18D] transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)]">
+                <p className="mt-2 text-[clamp(1rem,1.05vw,1.125rem)] font-normal leading-normal text-[#DBC18D] transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)]">
                   {item.description}
                 </p>
               ) : null}
@@ -76,4 +76,3 @@ export default function WorksSection() {
     </Section>
   );
 }
-
