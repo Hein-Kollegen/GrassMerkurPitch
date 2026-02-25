@@ -13,7 +13,7 @@ const timelineCards = [
   {
     title: "1. STRATEGIE",
     subline: "Wofür stehen wir – und für wen?",
-    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
+    iconSrc: "/assets/sections/modell/strategy-web.gif",
     body: "Bevor Sichtbarkeit entsteht, braucht es Klarheit.",
     list: [
       "Zielgruppenpriorisierung",
@@ -27,7 +27,7 @@ const timelineCards = [
   {
     title: "2. SICHTBARKEIT",
     subline: "Relevanz in Entscheidungsphasen.",
-    iconSrc: "/assets/sections/modell/animated-icon (2).gif",
+    iconSrc: "/assets/sections/modell/view-web.gif",
     body: "Grass-Merkur muss dort präsent sein, wo Entscheider recherchieren, vergleichen und absichern.",
     list: [
       "Google & KI-gestützte Recherche",
@@ -40,7 +40,7 @@ const timelineCards = [
   {
     title: "3. SYSTEME",
     subline: "Wachstum reproduzierbar machen.",
-    iconSrc: "/assets/sections/modell/animated-icon (1).gif",
+    iconSrc: "/assets/sections/modell/process-web.gif",
     body: "Netzwerk bleibt wertvoll. Doch zusätzlich braucht es klare Prozesse.",
     list: [
       "strukturierter Neukundenprozess",
@@ -53,7 +53,7 @@ const timelineCards = [
   {
     title: "4. STRUKTUR",
     subline: "Organisation, die Wachstum trägt.",
-    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
+    iconSrc: "/assets/sections/modell/process-flow-web.gif",
     body: "Mehr Nachfrage braucht stabile interne Abläufe.",
     list: [
       "klare Verantwortlichkeiten",
@@ -66,7 +66,7 @@ const timelineCards = [
   {
     title: "5. SKALIERUNG",
     subline: "Führung, die mitwächst.",
-    iconSrc: "/assets/sections/modell/animated-icon (3).gif",
+    iconSrc: "/assets/sections/modell/evolution-gif.gif",
     body: "Wachstum endet nicht im Vertrieb. Es endet in der Führung.",
     list: [
       "Delegationsfähigkeit",
@@ -290,8 +290,8 @@ export default function ModellSection() {
                   }}
                   className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
                 />
-                <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-2">
+                <div className="absolute right-4 top-4 z-[1] h-20 w-20 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-4">
                     <img src={card.iconSrc} alt="" className="h-16 w-16 object-contain rounded-full" />
                   </div>
                 </div>

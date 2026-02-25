@@ -13,8 +13,8 @@ const detailSlides = [
   {
     title: "S1 – STRATEGIE & MARKE",
     subline: "Fundament schaffen, bevor Maßnahmen starten.",
-    mediaType: "image",
-    mediaSrc: "/assets/sections/modell-detail/video-placeholder-strategie.png",
+    mediaType: "videoLeft",
+    mediaSrc: "/assets/sections/modell-detail/video-mock-up 1_1.mp4",
     body: "Hier entsteht Klarheit. Ohne sie wird Wachstum beliebig und zufällig.",
     list: [
       "Bestandsaufnahme Marketing- & Vertriebssystem",
@@ -29,8 +29,8 @@ const detailSlides = [
   {
     title: "S2 – SICHTBARKEIT",
     subline: "Relevanz in Entscheidungsphasen aufbauen.",
-    mediaType: "bg",
-    mediaSrc: "/assets/sections/modell-detail/bg-sichtbarkeit.png",
+    mediaType: "video",
+    mediaSrc: "/assets/sections/modell-detail/section 2 video.mp4",
     panelStyle: "overlay",
     body: "Nicht Reichweite ist das Ziel – sondern Wahrnehmung bei den richtigen Entscheidern.",
     list: [
@@ -51,8 +51,8 @@ const detailSlides = [
   {
     title: "S3 – SYSTEME",
     subline: "Neukunden- und Recruitingprozesse reproduzierbar machen.",
-    mediaType: "image",
-    mediaSrc: "/assets/sections/modell-detail/video-placeholder-systeme.png",
+    mediaType: "videoLeft",
+    mediaSrc: "/assets/sections/modell-detail/video-mock-up 2.mp4",
     body: "Wachstum darf nicht vom Zufall oder einzelnen Personen abhängen.",
     list: [
       "Strukturierter Neukunden-Funnel",
@@ -332,6 +332,18 @@ export default function ModellDetailSection() {
                   <div className="h-full w-full">
                     <div className="grid h-full grid-cols-2">
                       <div className="relative h-full w-full">
+                        {slide.mediaType === "videoLeft" ? (
+                          <div className="absolute inset-x-0 inset-y-8">
+                            <video
+                              className="h-full w-full object-contain object-left"
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              src={slide.mediaSrc}
+                            />
+                          </div>
+                        ) : null}
                         {slide.mediaType === "image" ? (
                           <img
                             src={slide.mediaSrc}

@@ -35,7 +35,6 @@ const cases = [
 export default function CaseStudiesSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
-  const lastPlayedRef = useRef(-1);
 
   useSplitScale({ scope: sectionRef });
 
@@ -69,7 +68,7 @@ export default function CaseStudiesSection() {
 
       gsap.set(cards, { autoAlpha: 0, scaleY: 0, transformOrigin: "top center" });
 
-      cards.forEach((card, index) => {
+      cards.forEach((card) => {
         const bg = card.querySelector<HTMLElement>("[data-case-bg]");
         const logo = card.querySelector<HTMLElement>("[data-case-logo]");
         const text = card.querySelector<HTMLElement>("[data-case-text]");
@@ -79,10 +78,6 @@ export default function CaseStudiesSection() {
           gsap.set(bg, { autoAlpha: 0, scaleY: 0, transformOrigin: "top center" });
         }
       });
-
-      const steps = cards.length;
-      const holdSteps = 1;
-      const stepLength = 400;
 
       const timelines = cards.map((card) => {
         const bg = card.querySelector<HTMLElement>("[data-case-bg]");
@@ -105,40 +100,32 @@ export default function CaseStudiesSection() {
         return tl;
       });
 
-      lastPlayedRef.current = -1;
+      const sequenceTl = gsap.timeline({ paused: true });
+      timelines.forEach((tl, index) => {
+        sequenceTl.add(() => {
+          tl.play(0);
+        }, index * 0.25);
+      });
+
+      let hasPlayed = false;
 
       const trigger = ScrollTrigger.create({
         trigger: sectionRef.current,
-        start: "center center",
-        end: () => `+=${stepLength * (steps + holdSteps)}`,
-        scrub: false,
-        pin: true,
-        pinSpacing: true,
+        start: "top 75%",
+        once: true,
         invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const totalSteps = steps + holdSteps;
-          const rawIndex = Math.floor(self.progress * totalSteps) - 1;
-          const stepIndex = Math.max(-1, Math.min(steps - 1, rawIndex));
-
-          if (stepIndex > lastPlayedRef.current) {
-            while (lastPlayedRef.current < stepIndex) {
-              lastPlayedRef.current += 1;
-              timelines[lastPlayedRef.current]?.play(0);
-            }
+        onEnter: () => {
+          if (hasPlayed) {
             return;
           }
-
-          if (stepIndex < lastPlayedRef.current) {
-            while (lastPlayedRef.current > stepIndex) {
-              timelines[lastPlayedRef.current]?.reverse();
-              lastPlayedRef.current -= 1;
-            }
-          }
+          hasPlayed = true;
+          sequenceTl.play(0);
         }
       });
 
       return () => {
         trigger.kill();
+        sequenceTl.kill();
         timelines.forEach((tl) => tl.kill());
       };
     },
