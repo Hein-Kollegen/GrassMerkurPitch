@@ -11,7 +11,8 @@ const works = [
   },
   {
     title: "TalentRadar",
-    image: "/assets/sections/works/talent-radar.png"
+    image: "/assets/sections/works/talent-radar.png",
+    href: "https://www.figma.com/proto/BdedKdxbrrpM26Wp9fDId2/Grass-Merkur-Recruiting?node-id=1-50&t=B6Hx3v7xJwcvnGi7-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1"
   },
   {
     title: "KI-Support-Framework für Lift-&-Shift-Projekte",
@@ -61,9 +62,20 @@ export default function WorksSection() {
                 (index === 0 ? "items-center text-center" : "")
               }
             >
-              <h3 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case">
-                {item.title}
-              </h3>
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case hover:underline"
+                >
+                  {item.title}
+                </a>
+              ) : (
+                <h3 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold leading-normal text-white transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)] normal-case">
+                  {item.title}
+                </h3>
+              )}
               {item.description ? (
                 <p className="mt-2 text-[clamp(1rem,1.05vw,1.125rem)] font-normal leading-normal text-[#DBC18D] transition duration-300 ease-out group-hover:[text-shadow:0_4px_16px_rgba(8,7,22,0.8)]">
                   {item.description}

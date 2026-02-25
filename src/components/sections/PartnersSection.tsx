@@ -92,44 +92,91 @@ export default function PartnersSection() {
         return;
       }
 
-      gsap.set(rowsRef.current, { yPercent: 60, willChange: "transform" });
+      const mm = gsap.matchMedia();
 
-      gsap.to(rowsRef.current, {
-        yPercent: -40,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "+=40%",
-          scrub: true,
-          pin: true,
-          invalidateOnRefresh: true
-        },
-        onComplete: () => {
-          gsap.set(rowsRef.current, { willChange: "auto" });
-        }
-      });
+      mm.add("(min-width: 1024px)", () => {
+        gsap.set(rowsRef.current, { yPercent: 60, willChange: "transform" });
 
-      rowElsRef.current.forEach((rowEl) => {
-        if (!rowEl) return;
-
-        gsap.fromTo(
-          rowEl,
-          { scale: 0.7, opacity: 0, transformOrigin: "center center" },
-          {
-            scale: 1,
-            opacity: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: rowEl,
-              start: "top bottom",
-              end: "top 70%",
-              scrub: true,
-              invalidateOnRefresh: true
-            }
+        gsap.to(rowsRef.current, {
+          yPercent: -40,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "+=40%",
+            scrub: true,
+            pin: true,
+            invalidateOnRefresh: true
+          },
+          onComplete: () => {
+            gsap.set(rowsRef.current, { willChange: "auto" });
           }
-        );
+        });
+
+        rowElsRef.current.forEach((rowEl) => {
+          if (!rowEl) return;
+          const duplicateRow = rowEl.querySelector<HTMLElement>(".partners-row-duplicate");
+          if (duplicateRow) {
+            gsap.set(duplicateRow, { display: "none" });
+          }
+
+          gsap.fromTo(
+            rowEl,
+            { scale: 0.7, opacity: 0, transformOrigin: "center center" },
+            {
+              scale: 1,
+              opacity: 1,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: rowEl,
+                start: "top bottom",
+                end: "top 70%",
+                scrub: true,
+                invalidateOnRefresh: true
+              }
+            }
+          );
+        });
       });
+
+      mm.add("(max-width: 1023px)", () => {
+        gsap.set(rowsRef.current, {
+          yPercent: 0,
+          clearProps: "transform,willChange"
+        });
+
+        rowElsRef.current.forEach((rowEl, rowIndex) => {
+          if (!rowEl) return;
+          const duplicateRow = rowEl.querySelector<HTMLElement>(".partners-row-duplicate");
+          if (duplicateRow) {
+            gsap.set(duplicateRow, { display: "flex" });
+          }
+
+          gsap.set(rowEl, {
+            scale: 1,
+            opacity: 1
+          });
+
+          const duration = 30 + (rowIndex % 3) * 2;
+          const fromX = rowIndex % 2 === 0 ? 0 : -50;
+          const toX = rowIndex % 2 === 0 ? -50 : 0;
+
+          gsap.fromTo(
+            rowEl,
+            { xPercent: fromX },
+            {
+              xPercent: toX,
+              duration,
+              ease: "none",
+              repeat: -1
+            }
+          );
+        });
+      });
+
+      return () => {
+        mm.revert();
+      };
     },
     { scope: sectionRef }
   );
@@ -142,37 +189,66 @@ export default function PartnersSection() {
       <div className="content-wrap flex h-full items-center justify-center">
         <div ref={rowsRef} className="flex w-full flex-col items-center justify-center gap-16">
           {rows.map((row, rowIndex) => (
-            <div
-              key={`row-${rowIndex}`}
-              ref={(el) => {
-                rowElsRef.current[rowIndex] = el;
-              }}
-              className="flex w-full flex-row flex-nowrap items-center justify-between gap-16"
-            >
-              {row.map((logo, logoIndex) => (
-                <div key={logo.name}>
-                  <div className="relative h-8 sm:h-10 lg:h-12">
-                    <Image
-                      src={logo.src}
-                      alt={logo.name}
-                      width={logo.width}
-                      height={logo.height}
-                      className="h-8 w-auto sm:h-10 lg:h-12"
-                    />
-                  </div>
+            <div key={`row-${rowIndex}`} className="w-full overflow-hidden lg:overflow-visible">
+              <div
+                ref={(el) => {
+                  rowElsRef.current[rowIndex] = el;
+                }}
+                className="flex w-max items-center gap-16 lg:w-full lg:gap-0"
+              >
+                <div className="flex shrink-0 flex-row flex-nowrap items-center gap-16 lg:w-full lg:justify-between">
+                  {row.map((logo) => (
+                    <div key={logo.name}>
+                      <div className="relative h-8 sm:h-10 lg:h-12">
+                        <Image
+                          src={logo.src}
+                          alt={logo.name}
+                          width={logo.width}
+                          height={logo.height}
+                          className="h-8 w-auto sm:h-10 lg:h-12"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+                <div
+                  aria-hidden="true"
+                  className="partners-row-duplicate hidden shrink-0 flex-row flex-nowrap items-center gap-16 lg:hidden"
+                >
+                  {row.map((logo, logoIndex) => (
+                    <div key={`${logo.name}-${logoIndex}-dup`}>
+                      <div className="relative h-8 sm:h-10">
+                        <Image
+                          src={logo.src}
+                          alt=""
+                          width={logo.width}
+                          height={logo.height}
+                          className="h-8 w-auto sm:h-10"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[#080716] to-[#08071600]"
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#080716] via-[rgba(8,7,22,0.45)] to-transparent lg:hidden"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#080716] to-[#08071600]"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#080716] via-[rgba(8,7,22,0.45)] to-transparent lg:hidden"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 hidden h-64 bg-gradient-to-b from-[#080716] to-[#08071600] lg:block"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-64 bg-gradient-to-t from-[#080716] to-[#08071600] lg:block"
       />
     </section>
   );

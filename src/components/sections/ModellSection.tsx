@@ -1,9 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import { Draggable } from "gsap/all";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitText from "@/components/typography/SplitText";
 import { useSplitScale } from "@/components/typography/useSplitScale";
@@ -82,7 +81,6 @@ export default function ModellSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const draggableRef = useRef<any>(null);
   const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useSplitScale({ scope: sectionRef });
@@ -202,100 +200,51 @@ export default function ModellSection() {
       };
     });
 
-    return () => {
-      mm.revert();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!viewportRef.current || !trackRef.current) return;
-
-    gsap.registerPlugin(Draggable);
-
-    const media = window.matchMedia("(min-width: 1024px)");
-    let resizeObserver: ResizeObserver | null = null;
-
-    const updateBounds = () => {
+    mm.add("(max-width: 1023px)", () => {
       if (!trackRef.current) return;
-      const { startOffset, endOffset } = getMetrics();
-      const minX = Math.min(endOffset, startOffset);
-      const maxX = Math.max(endOffset, startOffset);
-      draggableRef.current?.applyBounds({ minX, maxX });
-      draggableRef.current?.update();
-    };
 
-    const enableDrag = () => {
-      if (!trackRef.current || draggableRef.current) return;
-
-      const draggable = Draggable.create(trackRef.current, {
-        type: "x",
-        bounds: viewportRef.current,
-        dragResistance: 0.15,
-        inertia: false
-      })[0];
-
-      draggableRef.current = draggable;
-      updateBounds();
-
-      resizeObserver = new ResizeObserver(() => {
-        updateBounds();
+      gsap.set(trackRef.current, {
+        x: 0,
+        clearProps: "x,transform,willChange"
       });
 
-      if (viewportRef.current) resizeObserver.observe(viewportRef.current);
-      if (trackRef.current) resizeObserver.observe(trackRef.current);
-    };
-
-    const disableDrag = () => {
-      resizeObserver?.disconnect();
-      resizeObserver = null;
-      draggableRef.current?.kill();
-      draggableRef.current = null;
-    };
-
-    const syncDragState = () => {
-      if (media.matches) {
-        disableDrag();
-      } else {
-        enableDrag();
-      }
-    };
-
-    syncDragState();
-
-    media.addEventListener("change", syncDragState);
+      overlayRefs.current.forEach((overlay) => {
+        if (!overlay) return;
+        gsap.set(overlay, { opacity: 0 });
+      });
+    });
 
     return () => {
-      media.removeEventListener("change", syncDragState);
-      disableDrag();
+      mm.revert();
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="flex w-full flex-col items-center px-6 py-32 sm:px-10 lg:px-16"
+      className="flex w-full flex-col items-center px-6 py-32 lg:px-16"
     >
       <div className="content-wrap max-w-[1440px] flex flex-col items-center gap-12 text-center">
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center">
           <SplitText
             text="Der Weg?"
             split="words"
             as="h3"
-            className="split-scale"
+            className="split-scale mb-2 lg:mb-0"
             childClassName="inline-block"
           />
           <SplitText
             text="DAS 5-S-MODELL "
             split="words"
             as="h2"
-            className="split-scale uppercase"
+            className="split-scale uppercase leading-[1.2] lg:leading-[1.1]"
             childClassName="inline-block"
           />
           <SplitText
             text="FÜR SICHERES WACHSTUM"
             split="words"
             as="h2"
-            className="split-scale uppercase"
+            className="split-scale uppercase leading-[1.2] lg:leading-[1.1]"
             childClassName="inline-block"
           />
         </div>
@@ -311,19 +260,19 @@ export default function ModellSection() {
           </p>
         </div>
       </div>
-      <div className="content-wrap max-w-[1440px] mt-48 w-full">
+      <div className="content-wrap mt-16 w-full max-w-[1440px] lg:mt-48">
         <div ref={viewportRef} className="overflow-visible">
           <div
             ref={trackRef}
-            className="flex min-w-max items-start gap-6 pb-6 will-change-transform select-none touch-pan-y active:cursor-grabbing"
+            className="flex w-full min-w-0 flex-col gap-8 pb-0 lg:min-w-max lg:flex-row lg:items-start lg:gap-6 lg:pb-6 lg:will-change-transform lg:select-none lg:touch-pan-y lg:active:cursor-grabbing"
           >
             {timelineCards.map((card, index) => (
               <div
                 key={card.title}
                 data-timeline-card
                 className={
-                  "relative flex min-h-[260px] w-[85vw] flex-none flex-col rounded-[50px] border border-[#DBC18D]/30 p-10 transition-[border-color] duration-300 ease-out overflow-hidden bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] sm:w-[70vw] lg:w-[calc((min(1440px,100vw)-3rem)/3)] " +
-                  (index % 2 === 0 ? "self-start" : "self-end mt-20")
+                  "relative flex min-h-[260px] w-full flex-none flex-col overflow-hidden rounded-[50px] border border-[#DBC18D]/30 bg-[linear-gradient(90deg,#080716_0%,#080716_100%)] p-6 transition-[border-color] duration-300 ease-out lg:w-[calc((min(1440px,100vw)-3rem)/3)] lg:p-10 " +
+                  (index % 2 === 0 ? "lg:self-start" : "lg:self-end lg:mt-20")
                 }
               >
                 <div
@@ -332,9 +281,9 @@ export default function ModellSection() {
                   }}
                   className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
                 />
-                <div className="absolute right-4 top-4 z-[1] h-20 w-20 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px]">
+                <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px] lg:h-20 lg:w-20">
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-4">
-                    <img src={card.iconSrc} alt="" className="h-16 w-16 object-contain rounded-full" />
+                    <img src={card.iconSrc} alt="" className="h-10 w-10 rounded-full object-contain lg:h-16 lg:w-16" />
                   </div>
                 </div>
                 <div className="relative z-[1] gap-6 flex flex-col">

@@ -325,7 +325,7 @@ export default function ModellDetailSection() {
   return (
     <Section
       ref={sectionRef}
-      className="flex w-full flex-col items-center mt-32"
+      className="mt-32 flex w-full flex-col items-center px-0"
       innerClassName="w-full"
       useContentWrap={false}
     >

@@ -186,7 +186,7 @@ export default function TodayTomorrowSection() {
   return (
     <Section
       ref={sectionRef}
-      className="flex w-full justify-center bg-[#080716]"
+      className="flex w-full justify-center bg-[#080716] !px-6 lg:!px-0"
       innerClassName="w-full"
       useContentWrap={false}
     >
@@ -201,7 +201,7 @@ export default function TodayTomorrowSection() {
           />
           <div className="flex flex-col gap-8">
             <div ref={tabsRef} className="flex w-full items-center justify-center pb-8">
-              <div className="tabs-glow relative z-[1] flex flex-row items-center gap-4">
+              <div className="tabs-glow relative z-[1] flex flex-row flex-wrap items-center justify-center gap-4">
                 {tabs.map((tab) => {
                   const isActive = tab.key === activeTab;
 
@@ -228,7 +228,7 @@ export default function TodayTomorrowSection() {
                 <div
                   key={tab.key}
                   className={
-                    "w-full rounded-[40px] bg-[#080716] p-10 text-left text-white transition-opacity duration-300 " +
+                    "w-full rounded-[40px] bg-[#080716] p-4 text-left text-white transition-opacity duration-300 lg:p-10 " +
                     (tab.key === activeTab ? "block opacity-100" : "hidden opacity-0")
                   }
                 >
@@ -236,21 +236,21 @@ export default function TodayTomorrowSection() {
                     {tab.items.map((item) => (
                       <div
                         key={item.id}
-                        className="card-gradient-hover flex flex-row items-center gap-12 rounded-[40px] border border-[#DBC18D]/10 p-8 transition-[border-color] duration-300 ease-out hover:border-[#DBC18D]/30 [--card-bg:linear-gradient(0deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(0deg,#082940_0%,#080716_100%)]"
+                        className="card-gradient-hover flex flex-row items-center gap-12 rounded-[40px] border border-[#DBC18D]/30 p-4 transition-[border-color] duration-300 ease-out hover:border-[#DBC18D]/50 [--card-bg:linear-gradient(0deg,#080716_0%,#080716_100%)] [--card-hover-bg:linear-gradient(0deg,#082940_0%,#080716_100%)] lg:p-8"
                       >
-                        <div className="card-content flex w-full flex-row items-center gap-12">
+                        <div className="card-content flex w-full flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:gap-12 lg:text-left">
                           {/** keep layout stable per item */}
                           <div className="shrink-0 grow-0 basis-auto">
-                            <div className="flex h-[80px] w-[80px] items-center justify-center rounded-full border border-[#DBC18D]/30 bg-transparent">
+                            <div className="flex h-[56px] w-[56px] items-center justify-center rounded-full border border-[#DBC18D]/30 bg-transparent lg:h-[80px] lg:w-[80px]">
                               <img
                                 src="/assets/icons/Vector.svg"
                                 alt=""
-                                className="h-auto w-4"
+                                className="h-auto w-3 lg:w-4"
                               />
                             </div>
                           </div>
                           <div className="flex-1">
-                            <div className="flex flex-col p-0">
+                            <div className="flex flex-col gap-3 p-0">
                               <h3 className="text-[clamp(1.125rem,1.45vw,1.25rem)] font-semibold text-white normal-case [font-family:var(--font-display)]">
                                 {item.title}
                               </h3>
@@ -269,12 +269,12 @@ export default function TodayTomorrowSection() {
                               ) : null}
                             </div>
                             {tab.key !== "morgen" && item.body ? (
-                              <p className="mt-4 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
+                              <p className="mt-5 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.body}
                               </p>
                             ) : null}
                             {item.list ? (
-                              <ul className="mt-4 list-disc pl-5 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
+                              <ul className="mt-5 w-full list-disc pl-5 text-left text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.list.map((entry) => (
                                   <li key={entry} className="text-[clamp(1rem,1.05vw,1.125rem)]">
                                     {entry}
@@ -283,7 +283,7 @@ export default function TodayTomorrowSection() {
                               </ul>
                             ) : null}
                             {item.bodyAfterList ? (
-                              <p className="mt-4 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
+                              <p className="mt-5 text-[clamp(1rem,1.05vw,1.125rem)] font-normal text-white [font-family:var(--font-display)]">
                                 {item.bodyAfterList}
                               </p>
                             ) : null}

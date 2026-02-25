@@ -22,9 +22,10 @@ const cases = [
     description: "für B-4it AG",
     logo: "/assets/sections/partners/b4it.png",
     mockup: "/assets/sections/case-studies/b4-it.png",
-    mockupWrapClassName: "relative mt-auto h-[400px] w-full",
+    mockupWrapClassName: "relative mt-auto h-[500px] w-full",
     mockupClassName: "h-full w-full object-cover",
-    mockupUseFill: true
+    mockupUseFill: true,
+    mockupFadeMask: true
   },
   {
     title: "ProvenExpert",
@@ -177,6 +178,20 @@ export default function CaseStudiesSection() {
                     data-case-mockup
                     className={
                       "relative w-full " + (item.mockupWrapClassName ?? "mt-auto")
+                    }
+                    style={
+                      item.mockupFadeMask
+                        ? {
+                          WebkitMaskImage:
+                            "linear-gradient(to bottom, black 0%, black 90%, transparent 100%)",
+                          maskImage:
+                            "linear-gradient(to bottom, black 0%, black 90%, transparent 100%)",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskSize: "100% 100%",
+                          maskSize: "100% 100%"
+                        }
+                        : undefined
                     }
                   >
                     {item.mockupUseFill ? (

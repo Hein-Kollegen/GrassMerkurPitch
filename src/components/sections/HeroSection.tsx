@@ -5,14 +5,59 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import SplitText from "@/components/typography/SplitText";
 
-const TEXTS = ["kein Pitch.", "ein System."];
+const TEXTS = [" kein Pitch.", " ein System."];
 
 
 function HeroTypedTitle() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const measureRefs = useRef<Array<HTMLHeadingElement | null>>([]);
   const [text, setText] = useState(TEXTS[0]);
+  const [slotWidth, setSlotWidth] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const delayedRef = useRef<gsap.core.Tween | null>(null);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const syncDesktop = () => setIsDesktop(mediaQuery.matches);
+    syncDesktop();
+    mediaQuery.addEventListener("change", syncDesktop);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncDesktop);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) {
+      setSlotWidth(null);
+      return;
+    }
+
+    const updateSlotWidth = () => {
+      const maxWidth = measureRefs.current.reduce((largest, el) => {
+        if (!el) return largest;
+        return Math.max(largest, el.getBoundingClientRect().width);
+      }, 0);
+
+      if (maxWidth > 0) {
+        setSlotWidth(Math.ceil(maxWidth) + 8);
+      }
+    };
+
+    const rafId = window.requestAnimationFrame(updateSlotWidth);
+    const handleResize = () => updateSlotWidth();
+    window.addEventListener("resize", handleResize);
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(updateSlotWidth).catch(() => undefined);
+    }
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isDesktop]);
 
   useEffect(() => {
     let index = 0;
@@ -72,16 +117,33 @@ function HeroTypedTitle() {
   }, []);
 
   return (
-    <span className="relative inline-block">
-      <div ref={containerRef} className="inline-block">
-        <SplitText
-          text={text}
-          split="chars"
-          as="h1"
-          className="m-0 text-h1 font-extrabold uppercase text-white"
-          childClassName="inline-block"
-        />
-      </div>
+    <span
+      ref={containerRef}
+      className="inline-block min-h-[1.1em] shrink-0 leading-[1.1] align-baseline"
+      style={isDesktop ? { width: slotWidth ? `${slotWidth}px` : "clamp(18rem, 40vw, 34rem)" } : undefined}
+    >
+      <SplitText
+        text={text}
+        split="chars"
+        as="h1"
+        className="m-0 whitespace-pre text-h1 font-extrabold uppercase text-white"
+        childClassName="inline-block"
+      />
+      {isDesktop ? (
+        <span className="pointer-events-none absolute -z-10 opacity-0" aria-hidden="true">
+          {TEXTS.map((phrase, index) => (
+            <h1
+              key={phrase}
+              ref={(el) => {
+                measureRefs.current[index] = el;
+              }}
+              className="m-0 block w-max whitespace-pre text-h1 font-extrabold uppercase"
+            >
+              {phrase}
+            </h1>
+          ))}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -168,13 +230,13 @@ export default function HeroSection() {
   }, { scope: marqueeRef });
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#080716] px-6 py-10 sm:px-10 lg:px-16">
+    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#080716] px-6 py-10">
       <div
         ref={marqueeRef}
         className="absolute inset-0 overflow-hidden pointer-events-none marquee-container z-0"
         aria-hidden="true"
       >
-        <div className="absolute inset-0 z-10 bg-[linear-gradient(0deg,rgba(8,7,22,0.30)_30%,rgba(8,7,22,0.90)_100%)]" />
+        <div className="absolute inset-0 z-10 bg-[rgba(8,7,22,0.80)] lg:bg-[linear-gradient(0deg,rgba(8,7,22,0.30)_30%,rgba(8,7,22,0.90)_100%)]" />
         <div className="marquee h-full w-full grid grid-rows-4 gap-4 z-0 relative scale-[1.5] rotate-[13deg] opacity-[0.7]">
           {rows.map((row, rowIndex) => (
             <div
@@ -219,7 +281,7 @@ export default function HeroSection() {
 
         <div className="flex flex-1 flex-col items-center justify-center text-center">
           <div className="flex flex-col items-center gap-12 text-center">
-            <div className="relative flex items-center gap-3">
+            <div className="relative flex flex-col items-center text-center lg:inline-flex lg:flex-row lg:items-stretch lg:whitespace-nowrap">
               <h1 className="m-0 text-h1 font-extrabold uppercase text-white">Das ist</h1>
               <HeroTypedTitle />
             </div>
