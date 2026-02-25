@@ -208,3 +208,45 @@ body {
 .testimonial-pagination .swiper-pagination-bullet-active {
   background-image: linear-gradient(#DBC18D, #DBC18D);
 }
+
+@media (min-width: 1024px) {
+  html.custom-cursor,
+  html.custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+.custom-cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+}
+
+.custom-cursor-dot,
+.custom-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.custom-cursor-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+}
+
+.custom-cursor-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: transparent;
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.18);
+}

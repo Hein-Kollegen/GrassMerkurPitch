@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${raleway.variable} ${ralewayBody.variable}`}>
+        <CustomCursor />
         {children}
       </body>
     </html>

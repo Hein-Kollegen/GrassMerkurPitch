@@ -141,9 +141,49 @@ export default function ModellDetailSection() {
 
         let trigger: ScrollTrigger | null = null;
         let touchStartY = 0;
+        let listScrollTween: gsap.core.Tween | null = null;
+        let controlledList: HTMLDivElement | null = null;
+        const scrollState = { value: 0, target: 0 };
 
         const clampIndex = (value: number) =>
           Math.min(count - 1, Math.max(0, value));
+
+        const getMaxScroll = (listEl: HTMLDivElement) =>
+          Math.max(0, listEl.scrollHeight - listEl.clientHeight);
+
+        const clampScroll = (listEl: HTMLDivElement, value: number) =>
+          Math.min(getMaxScroll(listEl), Math.max(0, value));
+
+        const setControlledList = (listEl: HTMLDivElement) => {
+          if (controlledList === listEl) return;
+          listScrollTween?.kill();
+          controlledList = listEl;
+          scrollState.value = listEl.scrollTop;
+          scrollState.target = listEl.scrollTop;
+        };
+
+        const animateListTo = (listEl: HTMLDivElement, nextTarget: number) => {
+          setControlledList(listEl);
+          scrollState.target = clampScroll(listEl, nextTarget);
+
+          listScrollTween?.kill();
+          listScrollTween = gsap.to(scrollState, {
+            value: scrollState.target,
+            duration: 0.22,
+            ease: "power2.out",
+            overwrite: true,
+            onUpdate: () => {
+              if (!controlledList) return;
+              controlledList.scrollTop = clampScroll(controlledList, scrollState.value);
+            }
+          });
+        };
+
+        const releaseListController = () => {
+          listScrollTween?.kill();
+          listScrollTween = null;
+          controlledList = null;
+        };
 
         const animateToIndex = (targetIndex: number) => {
           if (isAnimatingRef.current) return;
@@ -162,6 +202,7 @@ export default function ModellDetailSection() {
             onComplete: () => {
               activeIndexRef.current = targetIndex;
               isAnimatingRef.current = false;
+              releaseListController();
               const desired = clampIndex(
                 Math.round((trigger?.progress ?? 0) * (count - 1))
               );
@@ -206,13 +247,15 @@ export default function ModellDetailSection() {
           if (!listEl || !canScrollList(listEl)) return;
 
           const delta = event.deltaY;
-          const atTop = listEl.scrollTop <= 0;
-          const atBottom =
-            listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 1;
+          const effectiveScroll =
+            controlledList === listEl ? scrollState.target : listEl.scrollTop;
+          const maxScroll = getMaxScroll(listEl);
+          const atTop = effectiveScroll <= 0.5;
+          const atBottom = effectiveScroll >= maxScroll - 0.5;
 
           if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
             event.preventDefault();
-            listEl.scrollTop += delta;
+            animateListTo(listEl, effectiveScroll + delta);
           }
         };
 
@@ -227,13 +270,15 @@ export default function ModellDetailSection() {
 
           const currentY = event.touches[0]?.clientY ?? 0;
           const delta = touchStartY - currentY;
-          const atTop = listEl.scrollTop <= 0;
-          const atBottom =
-            listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 1;
+          const effectiveScroll =
+            controlledList === listEl ? scrollState.target : listEl.scrollTop;
+          const maxScroll = getMaxScroll(listEl);
+          const atTop = effectiveScroll <= 0.5;
+          const atBottom = effectiveScroll >= maxScroll - 0.5;
 
           if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
             event.preventDefault();
-            listEl.scrollTop += delta;
+            animateListTo(listEl, effectiveScroll + delta);
             touchStartY = currentY;
           }
         };
@@ -246,6 +291,7 @@ export default function ModellDetailSection() {
           window.removeEventListener("wheel", handleWheel);
           window.removeEventListener("touchstart", handleTouchStart);
           window.removeEventListener("touchmove", handleTouchMove);
+          releaseListController();
           trigger?.kill();
         };
       });

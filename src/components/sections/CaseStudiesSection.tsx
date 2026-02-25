@@ -21,7 +21,10 @@ const cases = [
     subtitle: "Wachstum mit dem 5-S-Modell",
     description: "für B-4it AG",
     logo: "/assets/sections/partners/b4it.png",
-    mockup: "/assets/sections/case-studies/mock-up b4-it.png"
+    mockup: "/assets/sections/case-studies/b4-it.png",
+    mockupWrapClassName: "relative mt-auto h-[400px] w-full",
+    mockupClassName: "h-full w-full object-cover",
+    mockupUseFill: true
   },
   {
     title: "ProvenExpert",
@@ -152,13 +155,13 @@ export default function CaseStudiesSection() {
               data-case-card
               className="h-full rounded-[16px] bg-[linear-gradient(180deg,#DBC18D_0%,rgba(219,193,141,0)_60%)] p-[1px]"
             >
-              <div className="relative flex h-full flex-col gap-12 rounded-[15px] px-6 pb-6 pt-12 text-center">
+              <div className="relative flex h-full flex-col gap-12 rounded-[15px] text-center">
                 <div
                   data-case-bg
                   className="absolute inset-0 rounded-[15px] bg-[linear-gradient(0deg,rgba(8,7,22,0.20)_0%,rgba(8,7,22,0.20)_60%),linear-gradient(180deg,#092B42_0%,#080716_60%)]"
                 />
-                <div className="relative z-10 flex flex-col gap-12">
-                  <div className="flex flex-col gap-20">
+                <div className="relative z-10 flex flex-col gap-16">
+                  <div className="flex flex-col gap-12 px-6 pt-12">
                     <div data-case-logo className="relative mx-auto h-12 mt-8 w-full">
                       <Image src={item.logo} alt={item.title} fill className="object-contain" />
                     </div>
@@ -170,14 +173,32 @@ export default function CaseStudiesSection() {
                     </div>
                   </div>
 
-                  <div data-case-mockup className="relative mb-auto w-full">
-                    <Image
-                      src={item.mockup}
-                      alt={item.title}
-                      width={800}
-                      height={600}
-                      className="h-auto w-full object-contain scale-[1.25] origin-top"
-                    />
+                  <div
+                    data-case-mockup
+                    className={
+                      "relative w-full " + (item.mockupWrapClassName ?? "mt-auto")
+                    }
+                  >
+                    {item.mockupUseFill ? (
+                      <Image
+                        src={item.mockup}
+                        alt={item.title}
+                        fill
+                        className={
+                          item.mockupClassName ?? "h-auto w-full object-contain scale-[1.1] origin-top"
+                        }
+                      />
+                    ) : (
+                      <Image
+                        src={item.mockup}
+                        alt={item.title}
+                        width={800}
+                        height={600}
+                        className={
+                          item.mockupClassName ?? "h-auto w-full object-contain scale-[1.1] origin-top"
+                        }
+                      />
+                    )}
                   </div>
                 </div>
               </div>

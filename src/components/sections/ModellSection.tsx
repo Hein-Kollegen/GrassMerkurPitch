@@ -88,34 +88,53 @@ export default function ModellSection() {
   useSplitScale({ scope: sectionRef });
   useSplitLines({ scope: sectionRef });
 
+  const getMetrics = () => {
+    const viewportWidth = viewportRef.current?.clientWidth ?? 0;
+    const firstCard = trackRef.current?.querySelector<HTMLElement>("[data-timeline-card]");
+    if (!firstCard) {
+      return {
+        startOffset: 0,
+        endOffset: 0,
+        cardWidth: 0,
+        gap: 24,
+        cardStep: 0,
+        totalDistance: 0
+      };
+    }
+
+    const cardWidth = firstCard.getBoundingClientRect().width;
+    const gap = 24;
+    const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
+    const endOffset = startOffset - (2 * (cardWidth + gap));
+    const cardStep = cardWidth + gap;
+    const moveDistance = Math.abs(endOffset - startOffset);
+    const stepLength = moveDistance / 2;
+    const totalDistance = stepLength * 5;
+
+    return {
+      startOffset,
+      endOffset,
+      cardWidth,
+      gap,
+      cardStep,
+      totalDistance
+    };
+  };
+
   useGSAP(() => {
     if (!viewportRef.current || !trackRef.current) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const getOffsets = () => {
-      const viewportWidth = viewportRef.current?.clientWidth ?? 0;
-      const firstCard = trackRef.current?.querySelector<HTMLElement>("[data-timeline-card]");
-      if (!firstCard) return { startOffset: 0, endOffset: 0 };
-      const cardWidth = firstCard.getBoundingClientRect().width;
-      const gap = 24;
-      const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
-      const endOffset = startOffset - (2 * (cardWidth + gap));
-      return { startOffset, endOffset, cardWidth, gap };
-    };
-
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      const { startOffset, endOffset, cardWidth, gap } = getOffsets();
-      if (!cardWidth) return;
-      const cardsCount = overlayRefs.current.filter(Boolean).length || timelineCards.length;
-      const cardStep = cardWidth + gap;
-      const moveDistance = Math.abs(endOffset - startOffset);
-      const stepLength = moveDistance / 2;
-      const totalDistance = stepLength * 5;
+      const { cardWidth } = getMetrics();
+      if (!cardWidth || !trackRef.current || !viewportRef.current) return;
 
-      gsap.set(trackRef.current, { x: startOffset });
+      let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+      const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+      const delayedRefreshId = window.setTimeout(() => ScrollTrigger.refresh(), 150);
 
       const setHighlight = (index: number) => {
         overlayRefs.current.forEach((overlay, overlayIndex) => {
@@ -124,29 +143,61 @@ export default function ModellSection() {
         });
       };
 
+      gsap.set(trackRef.current, { x: () => getMetrics().startOffset });
+
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: viewportRef.current,
           start: "center center",
-          end: () => `+=${totalDistance}`,
+          end: () => `+=${getMetrics().totalDistance}`,
           scrub: true,
           pin: true,
-          invalidateOnRefresh: true
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefreshInit: () => {
+            if (!trackRef.current) return;
+            const { startOffset } = getMetrics();
+            gsap.set(trackRef.current, { x: startOffset });
+            setHighlight(0);
+          }
         }
       });
 
       timeline.call(() => setHighlight(0), [], 0);
-      timeline.to(trackRef.current, { x: startOffset, duration: 1, ease: "none" });
+      timeline.to(trackRef.current, { x: () => getMetrics().startOffset, duration: 1, ease: "none" });
       timeline.call(() => setHighlight(1));
-      timeline.to(trackRef.current, { x: startOffset - cardStep, duration: 1, ease: "none" });
+      timeline.to(trackRef.current, {
+        x: () => getMetrics().startOffset - getMetrics().cardStep,
+        duration: 1,
+        ease: "none"
+      });
       timeline.call(() => setHighlight(2));
-      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
       timeline.call(() => setHighlight(3));
-      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
       timeline.call(() => setHighlight(4));
-      timeline.to(trackRef.current, { x: endOffset, duration: 1, ease: "none" });
+      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
+
+      const handleViewportChange = () => {
+        if (resizeTimer) {
+          clearTimeout(resizeTimer);
+        }
+        resizeTimer = window.setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 120);
+      };
+
+      window.addEventListener("resize", handleViewportChange);
+      window.addEventListener("orientationchange", handleViewportChange);
 
       return () => {
+        if (resizeTimer) {
+          clearTimeout(resizeTimer);
+        }
+        cancelAnimationFrame(rafId);
+        window.clearTimeout(delayedRefreshId);
+        window.removeEventListener("resize", handleViewportChange);
+        window.removeEventListener("orientationchange", handleViewportChange);
         timeline.kill();
       };
     });
@@ -166,16 +217,7 @@ export default function ModellSection() {
 
     const updateBounds = () => {
       if (!trackRef.current) return;
-      const { startOffset, endOffset } = (() => {
-        const viewportWidth = viewportRef.current?.clientWidth ?? 0;
-        const firstCard = trackRef.current?.querySelector<HTMLElement>("[data-timeline-card]");
-        if (!firstCard) return { startOffset: 0, endOffset: 0 };
-        const cardWidth = firstCard.getBoundingClientRect().width;
-        const gap = 24;
-        const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
-        const endOffset = startOffset - (2 * (cardWidth + gap));
-        return { startOffset, endOffset };
-      })();
+      const { startOffset, endOffset } = getMetrics();
       const minX = Math.min(endOffset, startOffset);
       const maxX = Math.max(endOffset, startOffset);
       draggableRef.current?.applyBounds({ minX, maxX });

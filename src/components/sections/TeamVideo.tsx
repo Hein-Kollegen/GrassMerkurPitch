@@ -39,9 +39,8 @@ export default function TeamVideo() {
           ease: "power2.out",
           scrollTrigger: {
             trigger: videoWrapRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
-            once: true
+            start: "top 75%",
+            toggleActions: "play none none none"
           }
         }
       );
