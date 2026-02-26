@@ -394,7 +394,7 @@ export default function TeamVideo() {
           className="h-full w-full object-cover"
           playsInline
           preload="metadata"
-          src="/assets/sections/team-video/team-video-preview-3.mp4"
+          src="/assets/sections/team-video/team-video-master.mp4"
           onClick={async () => {
             if (!isFullscreen) return;
             showControlsTemporarily();

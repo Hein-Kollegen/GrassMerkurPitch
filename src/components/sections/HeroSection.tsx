@@ -253,7 +253,7 @@ export default function HeroSection() {
                     key={`marquee-row-${rowIndex}-image-${imageIndex}`}
                     className="marquee-item rounded-xl overflow-hidden"
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img src={src} alt="" className="h-full w-full object-cover object-center" />
                   </div>
                 ))}
               </div>
@@ -263,7 +263,7 @@ export default function HeroSection() {
                     key={`marquee-row-${rowIndex}-image-dup-${imageIndex}`}
                     className="marquee-item rounded-xl overflow-hidden"
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img src={src} alt="" className="h-full w-full object-cover object-center" />
                   </div>
                 ))}
               </div>

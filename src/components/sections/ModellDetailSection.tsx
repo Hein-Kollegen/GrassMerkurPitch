@@ -99,15 +99,74 @@ const detailSlides = [
 ];
 
 export default function ModellDetailSection() {
+  const LOCK_IDLE_MS = 500;
+  const GESTURE_IDLE_MS = 120;
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const stackRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
   const listRefs = useRef<Array<HTMLDivElement | null>>([]);
   const activeIndexRef = useRef(0);
   const isAnimatingRef = useRef(false);
+  const isListScrollLockRef = useRef(false);
+  const isPostSlideBoundaryLockRef = useRef(false);
+  const postSlideLockDirectionRef = useRef<1 | -1 | 0>(0);
+  const gestureActiveRef = useRef(false);
+  const gestureIdleTimerRef = useRef<number | null>(null);
+  const listScrollUnlockTimerRef = useRef<number | null>(null);
 
   useSplitScale({ scope: sectionRef });
   useSplitLines({ scope: sectionRef });
+
+  const clearListScrollLock = () => {
+    if (listScrollUnlockTimerRef.current !== null) {
+      window.clearTimeout(listScrollUnlockTimerRef.current);
+      listScrollUnlockTimerRef.current = null;
+    }
+    isListScrollLockRef.current = false;
+  };
+
+  const refreshListScrollLock = () => {
+    isListScrollLockRef.current = true;
+    if (listScrollUnlockTimerRef.current !== null) {
+      window.clearTimeout(listScrollUnlockTimerRef.current);
+      listScrollUnlockTimerRef.current = null;
+    }
+    listScrollUnlockTimerRef.current = window.setTimeout(() => {
+      isListScrollLockRef.current = false;
+      listScrollUnlockTimerRef.current = null;
+    }, LOCK_IDLE_MS);
+  };
+
+  const clearGestureIdleTimer = () => {
+    if (gestureIdleTimerRef.current !== null) {
+      window.clearTimeout(gestureIdleTimerRef.current);
+      gestureIdleTimerRef.current = null;
+    }
+  };
+
+  const markGestureActivity = () => {
+    const isNewGesture = !gestureActiveRef.current;
+    gestureActiveRef.current = true;
+    clearGestureIdleTimer();
+    gestureIdleTimerRef.current = window.setTimeout(() => {
+      gestureActiveRef.current = false;
+      gestureIdleTimerRef.current = null;
+    }, GESTURE_IDLE_MS);
+    return isNewGesture;
+  };
+
+  const activatePostSlideBoundaryLock = (direction: 1 | -1) => {
+    isPostSlideBoundaryLockRef.current = true;
+    postSlideLockDirectionRef.current = direction;
+  };
+
+  const clearPostSlideBoundaryLock = () => {
+    isPostSlideBoundaryLockRef.current = false;
+    postSlideLockDirectionRef.current = 0;
+  };
+
+  const isScrollBlocked = () =>
+    isAnimatingRef.current || isListScrollLockRef.current || isPostSlideBoundaryLockRef.current;
 
   useGSAP(
     () => {
@@ -130,6 +189,8 @@ export default function ModellDetailSection() {
         if (!cards.length) return;
 
         const count = cards.length;
+        const SLIDE_SWITCH_THRESHOLD = 0.35;
+        const SLIDE_SWITCH_BIAS = 1 - SLIDE_SWITCH_THRESHOLD;
 
         cards.forEach((card, index) => {
           gsap.set(card, {
@@ -144,7 +205,6 @@ export default function ModellDetailSection() {
         let listScrollTween: gsap.core.Tween | null = null;
         let controlledList: HTMLDivElement | null = null;
         const scrollState = { value: 0, target: 0 };
-
         const clampIndex = (value: number) =>
           Math.min(count - 1, Math.max(0, value));
 
@@ -185,6 +245,11 @@ export default function ModellDetailSection() {
           controlledList = null;
         };
 
+        const canScrollList = (listEl: HTMLDivElement | null) => {
+          if (!listEl) return false;
+          return listEl.scrollHeight > listEl.clientHeight + 1;
+        };
+
         const animateToIndex = (targetIndex: number) => {
           if (isAnimatingRef.current) return;
 
@@ -203,11 +268,18 @@ export default function ModellDetailSection() {
               activeIndexRef.current = targetIndex;
               isAnimatingRef.current = false;
               releaseListController();
-              const desired = clampIndex(
-                Math.round((trigger?.progress ?? 0) * (count - 1))
-              );
-              if (desired !== activeIndexRef.current) {
-                animateToIndex(desired);
+              const nextList = listRefs.current[targetIndex];
+              if (!nextList || !canScrollList(nextList)) {
+                activatePostSlideBoundaryLock(direction);
+                return;
+              }
+              const maxScroll = getMaxScroll(nextList);
+              const atTop = nextList.scrollTop <= 0.5;
+              const atBottom = nextList.scrollTop >= maxScroll - 0.5;
+              if ((direction > 0 && atBottom) || (direction < 0 && atTop)) {
+                activatePostSlideBoundaryLock(direction);
+              } else {
+                clearPostSlideBoundaryLock();
               }
             }
           });
@@ -220,7 +292,6 @@ export default function ModellDetailSection() {
             gsap.set(nextCard, { yPercent: 0, autoAlpha: 1 });
           }
         };
-
         trigger = ScrollTrigger.create({
           trigger: stackRef.current,
           start: "top top",
@@ -229,24 +300,56 @@ export default function ModellDetailSection() {
           pinSpacing: true,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const nextIndex = clampIndex(Math.round(self.progress * (count - 1)));
-            if (!isAnimatingRef.current && nextIndex !== activeIndexRef.current) {
+            const desiredIndex = clampIndex(
+              Math.floor(self.progress * (count - 1) + SLIDE_SWITCH_BIAS)
+            );
+            if (isScrollBlocked()) return;
+            const currentIndex = activeIndexRef.current;
+            if (!isAnimatingRef.current && desiredIndex !== currentIndex) {
+              const direction = desiredIndex > currentIndex ? 1 : -1;
+              const nextIndex = clampIndex(currentIndex + direction);
               animateToIndex(nextIndex);
             }
           }
         });
 
-        const canScrollList = (listEl: HTMLDivElement | null) => {
-          if (!listEl) return false;
-          return listEl.scrollHeight > listEl.clientHeight + 1;
-        };
-
         const handleWheel = (event: WheelEvent) => {
-          if (!trigger?.isActive || isAnimatingRef.current) return;
+          if (!trigger?.isActive) return;
+
           const listEl = listRefs.current[activeIndexRef.current];
+          const delta = event.deltaY;
+          const direction = delta > 0 ? 1 : delta < 0 ? -1 : 0;
+          const isNewGesture = markGestureActivity();
+
+          if (isPostSlideBoundaryLockRef.current) {
+            const lockDirection = postSlideLockDirectionRef.current;
+            if (!isNewGesture && (direction === 0 || direction === lockDirection)) {
+              event.preventDefault();
+              return;
+            }
+            clearPostSlideBoundaryLock();
+          }
+
+          if (isScrollBlocked()) {
+            event.preventDefault();
+
+            if (!listEl || !canScrollList(listEl)) return;
+
+            const effectiveScroll =
+              controlledList === listEl ? scrollState.target : listEl.scrollTop;
+            const maxScroll = getMaxScroll(listEl);
+            const atTop = effectiveScroll <= 0.5;
+            const atBottom = effectiveScroll >= maxScroll - 0.5;
+
+            if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
+              refreshListScrollLock();
+              animateListTo(listEl, effectiveScroll + delta);
+            }
+            return;
+          }
+
           if (!listEl || !canScrollList(listEl)) return;
 
-          const delta = event.deltaY;
           const effectiveScroll =
             controlledList === listEl ? scrollState.target : listEl.scrollTop;
           const maxScroll = getMaxScroll(listEl);
@@ -255,21 +358,61 @@ export default function ModellDetailSection() {
 
           if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
             event.preventDefault();
+            refreshListScrollLock();
             animateListTo(listEl, effectiveScroll + delta);
           }
         };
 
         const handleTouchStart = (event: TouchEvent) => {
           touchStartY = event.touches[0]?.clientY ?? 0;
+          gestureActiveRef.current = false;
+          clearGestureIdleTimer();
+          clearPostSlideBoundaryLock();
         };
 
         const handleTouchMove = (event: TouchEvent) => {
-          if (!trigger?.isActive || isAnimatingRef.current) return;
-          const listEl = listRefs.current[activeIndexRef.current];
-          if (!listEl || !canScrollList(listEl)) return;
+          if (!trigger?.isActive) return;
 
+          const listEl = listRefs.current[activeIndexRef.current];
           const currentY = event.touches[0]?.clientY ?? 0;
           const delta = touchStartY - currentY;
+          const direction = delta > 0 ? 1 : delta < 0 ? -1 : 0;
+          const isNewGesture = markGestureActivity();
+
+          if (isPostSlideBoundaryLockRef.current) {
+            const lockDirection = postSlideLockDirectionRef.current;
+            if (!isNewGesture && (direction === 0 || direction === lockDirection)) {
+              event.preventDefault();
+              touchStartY = currentY;
+              return;
+            }
+            clearPostSlideBoundaryLock();
+          }
+
+          if (isScrollBlocked()) {
+            event.preventDefault();
+
+            if (!listEl || !canScrollList(listEl)) {
+              touchStartY = currentY;
+              return;
+            }
+
+            const effectiveScroll =
+              controlledList === listEl ? scrollState.target : listEl.scrollTop;
+            const maxScroll = getMaxScroll(listEl);
+            const atTop = effectiveScroll <= 0.5;
+            const atBottom = effectiveScroll >= maxScroll - 0.5;
+
+            if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
+              refreshListScrollLock();
+              animateListTo(listEl, effectiveScroll + delta);
+            }
+            touchStartY = currentY;
+            return;
+          }
+
+          if (!listEl || !canScrollList(listEl)) return;
+
           const effectiveScroll =
             controlledList === listEl ? scrollState.target : listEl.scrollTop;
           const maxScroll = getMaxScroll(listEl);
@@ -278,6 +421,7 @@ export default function ModellDetailSection() {
 
           if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
             event.preventDefault();
+            refreshListScrollLock();
             animateListTo(listEl, effectiveScroll + delta);
             touchStartY = currentY;
           }
@@ -291,6 +435,11 @@ export default function ModellDetailSection() {
           window.removeEventListener("wheel", handleWheel);
           window.removeEventListener("touchstart", handleTouchStart);
           window.removeEventListener("touchmove", handleTouchMove);
+          isAnimatingRef.current = false;
+          gestureActiveRef.current = false;
+          clearGestureIdleTimer();
+          clearPostSlideBoundaryLock();
+          clearListScrollLock();
           releaseListController();
           trigger?.kill();
         };
@@ -310,6 +459,7 @@ export default function ModellDetailSection() {
     const atTop = target.scrollTop <= 0;
     const atBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 1;
     if ((event.deltaY < 0 && !atTop) || (event.deltaY > 0 && !atBottom)) {
+      refreshListScrollLock();
       event.stopPropagation();
     }
   };
@@ -318,6 +468,7 @@ export default function ModellDetailSection() {
     const target = event.currentTarget;
     const canScroll = target.scrollHeight > target.clientHeight;
     if (canScroll) {
+      refreshListScrollLock();
       event.stopPropagation();
     }
   };

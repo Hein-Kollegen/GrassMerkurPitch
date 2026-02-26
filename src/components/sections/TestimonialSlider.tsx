@@ -37,12 +37,48 @@ const testimonials = [
 ];
 
 export default function TestimonialSlider() {
+  const GESTURE_IDLE_MS = 120;
+  const SLIDE_SWITCH_THRESHOLD = 0.35;
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
   const activeSlideRef = useRef(0);
+  const isSlideTransitioningRef = useRef(false);
+  const isStepGestureLockRef = useRef(false);
+  const stepLockDirectionRef = useRef<1 | -1 | 0>(0);
+  const gestureActiveRef = useRef(false);
+  const gestureIdleTimerRef = useRef<number | null>(null);
+  const lastProgressRef = useRef(0);
 
   useSplitLines({ scope: sectionRef });
+
+  const clearGestureTimer = () => {
+    if (gestureIdleTimerRef.current !== null) {
+      window.clearTimeout(gestureIdleTimerRef.current);
+      gestureIdleTimerRef.current = null;
+    }
+  };
+
+  const markGestureActivity = () => {
+    const isNewGesture = !gestureActiveRef.current;
+    gestureActiveRef.current = true;
+    clearGestureTimer();
+    gestureIdleTimerRef.current = window.setTimeout(() => {
+      gestureActiveRef.current = false;
+      gestureIdleTimerRef.current = null;
+    }, GESTURE_IDLE_MS);
+    return isNewGesture;
+  };
+
+  const lockStepForGesture = (direction: 1 | -1) => {
+    isStepGestureLockRef.current = true;
+    stepLockDirectionRef.current = direction;
+  };
+
+  const clearStepGestureLock = () => {
+    isStepGestureLockRef.current = false;
+    stepLockDirectionRef.current = 0;
+  };
 
   useGSAP(
     () => {
@@ -91,17 +127,63 @@ export default function TestimonialSlider() {
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          const progressStep = Math.floor(self.progress * steps);
-          const targetIndex = Math.max(0, Math.min(steps - 1, progressStep));
-          if (targetIndex === activeSlideRef.current) return;
-          activeSlideRef.current = targetIndex;
-          swiperRef.current?.slideTo(targetIndex, 600);
+          const progress = self.progress;
+          const delta = progress - lastProgressRef.current;
+          lastProgressRef.current = progress;
+
+          const direction: 1 | -1 | 0 = delta > 0.0005 ? 1 : delta < -0.0005 ? -1 : 0;
+          if (direction === 0) return;
+
+          const isNewGesture = markGestureActivity();
+          if (isNewGesture) {
+            clearStepGestureLock();
+          }
+
+          if (isStepGestureLockRef.current && stepLockDirectionRef.current === direction) {
+            return;
+          }
+
+          if (isSlideTransitioningRef.current) return;
+
+          const current = activeSlideRef.current;
+
+          if (direction > 0 && current < steps - 1) {
+            const thresholdProgress = (current + SLIDE_SWITCH_THRESHOLD) / steps;
+            if (progress >= thresholdProgress) {
+              const targetIndex = current + 1;
+              isSlideTransitioningRef.current = true;
+              lockStepForGesture(1);
+              swiperRef.current?.slideTo(targetIndex, 600);
+            }
+          }
+
+          if (direction < 0 && current > 0) {
+            const thresholdProgress = (current - SLIDE_SWITCH_THRESHOLD) / steps;
+            if (progress <= thresholdProgress) {
+              const targetIndex = current - 1;
+              isSlideTransitioningRef.current = true;
+              lockStepForGesture(-1);
+              swiperRef.current?.slideTo(targetIndex, 600);
+            }
+          }
         },
         onRefresh: () => {
           const current = swiperRef.current?.activeIndex ?? 0;
           activeSlideRef.current = current;
+          lastProgressRef.current = 0;
+          isSlideTransitioningRef.current = false;
+          gestureActiveRef.current = false;
+          clearStepGestureLock();
+          clearGestureTimer();
         }
       });
+
+      return () => {
+        clearGestureTimer();
+        clearStepGestureLock();
+        isSlideTransitioningRef.current = false;
+        gestureActiveRef.current = false;
+      };
     },
     { scope: sectionRef }
   );
@@ -123,12 +205,21 @@ export default function TestimonialSlider() {
               modules={[Pagination]}
               loop={false}
               speed={700}
-              grabCursor
-              pagination={{ clickable: true, el: ".testimonial-pagination" }}
+              grabCursor={false}
+              allowTouchMove={false}
+              pagination={{ clickable: false, el: ".testimonial-pagination" }}
               className="testimonial-swiper h-full"
               onSwiper={(swiper) => {
                 swiperRef.current = swiper;
                 activeSlideRef.current = swiper.activeIndex;
+                isSlideTransitioningRef.current = false;
+              }}
+              onSlideChange={(swiper) => {
+                activeSlideRef.current = swiper.activeIndex;
+              }}
+              onSlideChangeTransitionEnd={(swiper) => {
+                activeSlideRef.current = swiper.activeIndex;
+                isSlideTransitioningRef.current = false;
               }}
             >
               {testimonials.map((item) => (

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
+import { usePageBoot } from "@/components/providers/PageBootProvider";
 
 const CURSOR_MEDIA_QUERY = "(min-width: 1024px) and (pointer: fine)";
 const CURSOR_IDLE_TIMEOUT = 1000;
@@ -24,13 +25,14 @@ export default function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const fullscreenElRef = useRef<HTMLElement | null>(null);
+  const { isLoaderVisible } = usePageBoot();
 
   useEffect(() => {
     const media = window.matchMedia(CURSOR_MEDIA_QUERY);
     const root = document.documentElement;
 
     const sync = () => {
-      const nextEnabled = media.matches;
+      const nextEnabled = media.matches && !isLoaderVisible;
       setEnabled(nextEnabled);
       root.classList.toggle("custom-cursor", nextEnabled);
     };
@@ -42,7 +44,7 @@ export default function CustomCursor() {
       media.removeEventListener("change", sync);
       root.classList.remove("custom-cursor");
     };
-  }, []);
+  }, [isLoaderVisible]);
 
   useEffect(() => {
     const doc = document as FullscreenDocument;

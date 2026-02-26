@@ -27,9 +27,6 @@ export function useSplitScale({ scope }: UseSplitScaleOptions) {
 
       const targets = gsap.utils.toArray<HTMLElement>(".split-scale", scope.current);
       const tweens: gsap.core.Tween[] = [];
-      let rafId: number | null = null;
-      let delayedRefreshId: number | null = null;
-      let isActive = true;
 
       targets.forEach((target) => {
         const tween = gsap.fromTo(
@@ -51,34 +48,7 @@ export function useSplitScale({ scope }: UseSplitScaleOptions) {
         tweens.push(tween);
       });
 
-      const refreshAfterFonts = () => {
-        rafId = window.requestAnimationFrame(() => {
-          if (!isActive) return;
-          ScrollTrigger.refresh();
-          delayedRefreshId = window.setTimeout(() => {
-            if (!isActive) return;
-            ScrollTrigger.refresh();
-          }, 120);
-        });
-      };
-
-      if (document.fonts?.ready) {
-        document.fonts.ready
-          .catch(() => undefined)
-          .finally(() => {
-            if (!isActive) return;
-            refreshAfterFonts();
-          });
-      }
-
       return () => {
-        isActive = false;
-        if (rafId !== null) {
-          window.cancelAnimationFrame(rafId);
-        }
-        if (delayedRefreshId !== null) {
-          window.clearTimeout(delayedRefreshId);
-        }
         tweens.forEach((tween) => tween.kill());
       };
     },

@@ -95,22 +95,9 @@ export default function PartnersSection() {
       const mm = gsap.matchMedia();
 
       mm.add("(min-width: 1024px)", () => {
-        gsap.set(rowsRef.current, { yPercent: 60, willChange: "transform" });
-
-        gsap.to(rowsRef.current, {
-          yPercent: -40,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top top",
-            end: "+=40%",
-            scrub: true,
-            pin: true,
-            invalidateOnRefresh: true
-          },
-          onComplete: () => {
-            gsap.set(rowsRef.current, { willChange: "auto" });
-          }
+        gsap.set(rowsRef.current, {
+          yPercent: 0,
+          clearProps: "transform,willChange"
         });
 
         rowElsRef.current.forEach((rowEl) => {
@@ -184,7 +171,7 @@ export default function PartnersSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[100svh] overflow-hidden bg-midnight px-6 py-16 sm:px-10 lg:px-16 flex items-center justify-center"
+      className="relative min-h-[150svh] overflow-hidden bg-midnight px-6 py-16 sm:px-10 lg:px-16 flex items-center justify-center"
     >
       <div className="content-wrap flex h-full items-center justify-center">
         <div ref={rowsRef} className="flex w-full flex-col items-center justify-center gap-16">
@@ -199,13 +186,16 @@ export default function PartnersSection() {
                 <div className="flex shrink-0 flex-row flex-nowrap items-center gap-16 lg:w-full lg:justify-between">
                   {row.map((logo) => (
                     <div key={logo.name}>
-                      <div className="relative h-8 sm:h-10 lg:h-12">
+                      <div
+                        className="relative h-8 w-auto sm:h-10 lg:h-12"
+                        style={{ aspectRatio: `${logo.width} / ${logo.height}` }}
+                      >
                         <Image
                           src={logo.src}
                           alt={logo.name}
                           width={logo.width}
                           height={logo.height}
-                          className="h-8 w-auto sm:h-10 lg:h-12"
+                          className="h-full w-auto object-contain"
                         />
                       </div>
                     </div>
@@ -217,13 +207,16 @@ export default function PartnersSection() {
                 >
                   {row.map((logo, logoIndex) => (
                     <div key={`${logo.name}-${logoIndex}-dup`}>
-                      <div className="relative h-8 sm:h-10">
+                      <div
+                        className="relative h-8 w-auto sm:h-10"
+                        style={{ aspectRatio: `${logo.width} / ${logo.height}` }}
+                      >
                         <Image
                           src={logo.src}
                           alt=""
                           width={logo.width}
                           height={logo.height}
-                          className="h-8 w-auto sm:h-10"
+                          className="h-full w-auto object-contain"
                         />
                       </div>
                     </div>

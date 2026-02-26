@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
 import CustomCursor from "@/components/ui/CustomCursor";
 import ScrollTriggerStabilityProvider from "@/components/providers/ScrollTriggerStabilityProvider";
+import PageBootProvider from "@/components/providers/PageBootProvider";
+import PageLoader from "@/components/ui/PageLoader";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -29,9 +31,12 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${raleway.variable} ${ralewayBody.variable}`}>
-        <ScrollTriggerStabilityProvider />
-        <CustomCursor />
-        {children}
+        <PageBootProvider>
+          <ScrollTriggerStabilityProvider />
+          <CustomCursor />
+          {children}
+          <PageLoader />
+        </PageBootProvider>
       </body>
     </html>
   );

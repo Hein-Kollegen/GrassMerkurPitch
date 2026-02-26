@@ -131,8 +131,8 @@ export default function ModellSection() {
       if (!cardWidth || !trackRef.current || !viewportRef.current) return;
 
       let resizeTimer: number | null = null;
-      const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
-      const delayedRefreshId = window.setTimeout(() => ScrollTrigger.refresh(), 150);
+      let lastViewportWidth = window.innerWidth;
+      let lastViewportHeight = window.innerHeight;
 
       const setHighlight = (index: number) => {
         overlayRefs.current.forEach((overlay, overlayIndex) => {
@@ -146,7 +146,7 @@ export default function ModellSection() {
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: viewportRef.current,
-          start: "center center",
+          start: "top top",
           end: () => `+=${getMetrics().totalDistance}`,
           scrub: true,
           pin: true,
@@ -181,6 +181,16 @@ export default function ModellSection() {
           window.clearTimeout(resizeTimer);
         }
         resizeTimer = window.setTimeout(() => {
+          const nextViewportWidth = window.innerWidth;
+          const nextViewportHeight = window.innerHeight;
+          if (
+            nextViewportWidth === lastViewportWidth &&
+            nextViewportHeight === lastViewportHeight
+          ) {
+            return;
+          }
+          lastViewportWidth = nextViewportWidth;
+          lastViewportHeight = nextViewportHeight;
           ScrollTrigger.refresh();
         }, 120);
       };
@@ -192,8 +202,6 @@ export default function ModellSection() {
         if (resizeTimer) {
           window.clearTimeout(resizeTimer);
         }
-        cancelAnimationFrame(rafId);
-        window.clearTimeout(delayedRefreshId);
         window.removeEventListener("resize", handleViewportChange);
         window.removeEventListener("orientationchange", handleViewportChange);
         timeline.kill();
@@ -261,10 +269,10 @@ export default function ModellSection() {
         </div>
       </div>
       <div className="content-wrap mt-16 w-full max-w-[1440px] lg:mt-48">
-        <div ref={viewportRef} className="overflow-visible">
+        <div ref={viewportRef} className="overflow-visible lg:flex lg:h-[100svh] lg:items-center">
           <div
             ref={trackRef}
-            className="flex w-full min-w-0 flex-col gap-8 pb-0 lg:min-w-max lg:flex-row lg:items-start lg:gap-6 lg:pb-6 lg:will-change-transform lg:select-none lg:touch-pan-y lg:active:cursor-grabbing"
+            className="flex w-full min-w-0 flex-col gap-8 pb-0 lg:min-w-max lg:flex-row lg:items-start lg:gap-6 lg:will-change-transform lg:select-none lg:touch-pan-y lg:active:cursor-grabbing"
           >
             {timelineCards.map((card, index) => (
               <div

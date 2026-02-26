@@ -83,6 +83,12 @@ body {
   overflow-x: hidden;
 }
 
+.boot-lock {
+  overflow: hidden !important;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
 * {
   scrollbar-color: #dbc18d #080716;
   scrollbar-width: thin;
@@ -254,4 +260,20 @@ body {
   background: transparent;
   opacity: 1;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.18);
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-spinner {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 3px solid rgba(219, 193, 141, 0.35);
+  border-top-color: #dbc18d;
+  animation: loader-spin 0.75s linear infinite;
 }
