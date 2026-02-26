@@ -214,6 +214,11 @@ body {
   html.custom-cursor * {
     cursor: none !important;
   }
+
+  .custom-cursor-fs,
+  .custom-cursor-fs * {
+    cursor: none !important;
+  }
 }
 
 .custom-cursor-layer {

@@ -119,7 +119,7 @@ function HeroTypedTitle() {
   return (
     <span
       ref={containerRef}
-      className="inline-block min-h-[1.1em] shrink-0 leading-[1.1] align-baseline"
+      className="flex items-start min-h-[1.1em] shrink-0 leading-[1.1] align-baseline"
       style={isDesktop ? { width: slotWidth ? `${slotWidth}px` : "clamp(18rem, 40vw, 34rem)" } : undefined}
     >
       <SplitText
@@ -236,7 +236,8 @@ export default function HeroSection() {
         className="absolute inset-0 overflow-hidden pointer-events-none marquee-container z-0"
         aria-hidden="true"
       >
-        <div className="absolute inset-0 z-10 bg-[rgba(8,7,22,0.80)] lg:bg-[linear-gradient(0deg,rgba(8,7,22,0.30)_30%,rgba(8,7,22,0.90)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-10 block bg-[rgba(8,7,22,0.80)] lg:hidden" />
+        <div className="pointer-events-none absolute inset-0 z-10 hidden bg-[linear-gradient(0deg,rgba(8,7,22,0.30)_30%,rgba(8,7,22,0.90)_100%)] lg:block" />
         <div className="marquee h-full w-full grid grid-rows-4 gap-4 z-0 relative scale-[1.5] rotate-[13deg] opacity-[0.7]">
           {rows.map((row, rowIndex) => (
             <div

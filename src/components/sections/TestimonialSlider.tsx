@@ -40,6 +40,7 @@ export default function TestimonialSlider() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
+  const activeSlideRef = useRef(0);
 
   useSplitLines({ scope: sectionRef });
 
@@ -83,14 +84,22 @@ export default function TestimonialSlider() {
 
       ScrollTrigger.create({
         trigger: sectionRef.current,
-        start: "center center",
+        start: "top top",
         end: () => `+=${stepLength * (steps + holdSteps)}`,
         pin: true,
         scrub: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           const progressStep = Math.floor(self.progress * steps);
           const targetIndex = Math.max(0, Math.min(steps - 1, progressStep));
+          if (targetIndex === activeSlideRef.current) return;
+          activeSlideRef.current = targetIndex;
           swiperRef.current?.slideTo(targetIndex, 600);
+        },
+        onRefresh: () => {
+          const current = swiperRef.current?.activeIndex ?? 0;
+          activeSlideRef.current = current;
         }
       });
     },
@@ -119,6 +128,7 @@ export default function TestimonialSlider() {
               className="testimonial-swiper h-full"
               onSwiper={(swiper) => {
                 swiperRef.current = swiper;
+                activeSlideRef.current = swiper.activeIndex;
               }}
             >
               {testimonials.map((item) => (
@@ -131,7 +141,13 @@ export default function TestimonialSlider() {
 
                   <div className="mt-14 flex flex-row flex-nowrap items-center justify-center gap-8">
                     <div className="relative h-10 w-10 flex-none">
-                      <Image src={item.logo} alt={item.name} fill className="object-contain" />
+                      <Image
+                        src={item.logo}
+                        alt={item.name}
+                        fill
+                        sizes="40px"
+                        className="object-contain"
+                      />
                     </div>
                     <p className="text-white">
                       <strong className="text-[clamp(1.125rem,1.6vw,1.375rem)] font-semibold mr-4">{item.name}</strong>{" "}

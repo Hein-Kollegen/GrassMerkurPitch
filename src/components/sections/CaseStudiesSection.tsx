@@ -35,6 +35,7 @@ const cases = [
     mockup: "/assets/sections/case-studies/mockup-proven-expert.png"
   }
 ];
+const cardImageSizes = "(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw";
 
 export default function CaseStudiesSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -164,7 +165,13 @@ export default function CaseStudiesSection() {
                 <div className="relative z-10 flex flex-col gap-16">
                   <div className="flex flex-col gap-12 px-6 pt-12">
                     <div data-case-logo className="relative mx-auto h-12 mt-8 w-full">
-                      <Image src={item.logo} alt={item.title} fill className="object-contain" />
+                      <Image
+                        src={item.logo}
+                        alt={item.title}
+                        fill
+                        sizes={cardImageSizes}
+                        className="object-contain"
+                      />
                     </div>
                     <div data-case-text className="flex flex-col gap-2">
                       <h4 className="text-center text-[clamp(1.125rem,1.45vw,1.25rem)] font-bold leading-[28px] text-white">
@@ -199,6 +206,7 @@ export default function CaseStudiesSection() {
                         src={item.mockup}
                         alt={item.title}
                         fill
+                        sizes={cardImageSizes}
                         className={
                           item.mockupClassName ?? "h-auto w-full object-contain scale-[1.1] origin-top"
                         }

@@ -75,11 +75,41 @@ export function useSplitLines({ scope }: UseSplitLinesOptions) {
         splits.forEach((s) => s.revert());
         ScrollTrigger.refresh();
       };
+      let rafId: number | null = null;
+      let delayedRefreshId: number | null = null;
+      let isActive = true;
+
+      const refreshAfterFrame = () => {
+        rafId = window.requestAnimationFrame(() => {
+          if (!isActive) return;
+          ScrollTrigger.refresh();
+          delayedRefreshId = window.setTimeout(() => {
+            if (!isActive) return;
+            ScrollTrigger.refresh();
+          }, 120);
+        });
+      };
+
+      if (document.fonts?.ready) {
+        document.fonts.ready
+          .catch(() => undefined)
+          .finally(() => {
+            if (!isActive) return;
+            refreshAfterFrame();
+          });
+      }
 
       window.addEventListener("resize", onResize);
 
       return () => {
+        isActive = false;
         window.removeEventListener("resize", onResize);
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+        }
+        if (delayedRefreshId !== null) {
+          window.clearTimeout(delayedRefreshId);
+        }
         animations.forEach((t) => t.kill());
         splits.forEach((s) => s.revert());
       };

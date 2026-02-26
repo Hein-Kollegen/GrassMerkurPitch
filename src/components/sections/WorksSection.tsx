@@ -7,7 +7,8 @@ import { Section } from "@/components/layout/Section";
 const works = [
   {
     title: "Redaktionsplanung",
-    image: "/assets/sections/works/board.png"
+    image: "/assets/sections/works/board.png",
+    href: "https://trello.com/b/f6oeLRwE/grass-merkur-social-media"
   },
   {
     title: "TalentRadar",
@@ -20,7 +21,7 @@ const works = [
   },
   {
     title: "Jährlicher Trust-Report für kritische IT-Infrastruktur",
-    description: "Ein unabhÃ¤ngiger Blick auf Risiken, Entscheidungen und Vertrauen.",
+    description: "Ein unabhängiger Blick auf Risiken, Entscheidungen und Vertrauen.",
     image: "/assets/sections/works/trust-reports.png"
   },
   {
@@ -52,7 +53,7 @@ export default function WorksSection() {
         {works.map((item, index) => (
           <div
             key={item.title}
-            className={`group relative h-[100svh] w-full overflow-hidden bg-cover bg-no-repeat transition ${index === 0 ? "md:col-span-2" : ""}`}
+            className={`group relative h-[100svh] w-full overflow-hidden bg-cover bg-center bg-no-repeat transition ${index === 0 ? "md:col-span-2" : ""}`}
             style={{ backgroundImage: `url("${item.image}")` }}
           >
             <div className="absolute inset-0 bg-[linear-gradient(0deg,#080716_4.33%,rgba(8,7,22,0.70)_68.27%,rgba(0,0,0,0)_100%)] transition-opacity duration-300 ease-out group-hover:opacity-70" />

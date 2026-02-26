@@ -201,6 +201,7 @@ export default function OverviewSection() {
                 src={badge.src}
                 alt={badge.name}
                 fill
+                sizes="128px"
                 className="object-contain will-change-transform overflow-visible"
                 data-badge
               />
