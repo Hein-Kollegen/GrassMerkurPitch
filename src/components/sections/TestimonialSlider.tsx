@@ -124,7 +124,7 @@ export default function TestimonialSlider() {
         end: () => `+=${stepLength * (steps + holdSteps)}`,
         pin: true,
         scrub: true,
-        anticipatePin: 1,
+        anticipatePin: 0,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           const progress = self.progress;

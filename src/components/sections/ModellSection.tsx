@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
@@ -77,6 +77,33 @@ const timelineCards = [
   }
 ];
 
+type StepIndex = 0 | 1 | 2 | 3 | 4;
+
+type TimelineMetrics = {
+  startOffset: number;
+  endOffset: number;
+  cardWidth: number;
+  gap: number;
+  cardStep: number;
+};
+
+const LAST_STEP: StepIndex = 4;
+
+const STEP_CONFIG = {
+  WHEEL_THRESHOLD_PX: 60,
+  TOUCH_THRESHOLD_PX: 52,
+  GESTURE_IDLE_MS: 140,
+  COOLDOWN_MS: 420,
+  ENTRY_LOCK_IDLE_MS: 140,
+  SESSION_IDLE_MS: 140,
+  SESSION_COOLDOWN_MS: 420,
+  ANCHOR_TOLERANCE_PX: 6,
+  ANCHOR_OFFSET_PX: 1,
+  TRACK_MOVE_DURATION: 0.5,
+  HIGHLIGHT_FADE_DURATION: 0.2,
+  PIN_DISTANCE_FACTOR: 1.2
+} as const;
+
 export default function ModellSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -95,8 +122,7 @@ export default function ModellSection() {
         endOffset: 0,
         cardWidth: 0,
         gap: 24,
-        cardStep: 0,
-        totalDistance: 0
+        cardStep: 0
       };
     }
 
@@ -105,17 +131,13 @@ export default function ModellSection() {
     const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
     const endOffset = startOffset - (2 * (cardWidth + gap));
     const cardStep = cardWidth + gap;
-    const moveDistance = Math.abs(endOffset - startOffset);
-    const stepLength = moveDistance / 2;
-    const totalDistance = stepLength * 5;
 
     return {
       startOffset,
       endOffset,
       cardWidth,
       gap,
-      cardStep,
-      totalDistance
+      cardStep
     };
   };
 
@@ -127,54 +149,330 @@ export default function ModellSection() {
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      const { cardWidth } = getMetrics();
-      if (!cardWidth || !trackRef.current || !viewportRef.current) return;
+      if (!trackRef.current || !viewportRef.current) return;
 
       let resizeTimer: number | null = null;
       let lastViewportWidth = window.innerWidth;
       let lastViewportHeight = window.innerHeight;
+      let gestureIdleTimer: number | null = null;
+      let touchStartY = 0;
+      let currentStep: StepIndex = 0;
+      let isPinnedActive = false;
+      let isAnimating = false;
+      let cooldownUntil = 0;
+      let gestureAccumulator = 0;
+      let gestureDirection: 1 | -1 | 0 = 0;
+      let trackTween: gsap.core.Tween | null = null;
+      let pinTrigger: ScrollTrigger | null = null;
+      let metrics: TimelineMetrics = getMetrics();
+      let entryLockActive = false;
+      let entryLockIdleTimer: number | null = null;
+      let gestureSessionActive = false;
+      let gestureSessionConsumed = false;
+      let gestureSessionIdleTimer: number | null = null;
+      let isIntentionalRelease = false;
+
+      if (!metrics.cardWidth) return;
+
+      const getStepX = (step: StepIndex, currentMetrics: TimelineMetrics) => {
+        if (step <= 1) return currentMetrics.startOffset;
+        if (step === 2) return currentMetrics.startOffset - currentMetrics.cardStep;
+        return currentMetrics.endOffset;
+      };
+
+      const clearGestureIdleTimer = () => {
+        if (gestureIdleTimer !== null) {
+          window.clearTimeout(gestureIdleTimer);
+          gestureIdleTimer = null;
+        }
+      };
+
+      const clearEntryLockIdleTimer = () => {
+        if (entryLockIdleTimer !== null) {
+          window.clearTimeout(entryLockIdleTimer);
+          entryLockIdleTimer = null;
+        }
+      };
+
+      const clearGestureSessionIdleTimer = () => {
+        if (gestureSessionIdleTimer !== null) {
+          window.clearTimeout(gestureSessionIdleTimer);
+          gestureSessionIdleTimer = null;
+        }
+      };
+
+      const resetGestureState = () => {
+        gestureAccumulator = 0;
+        gestureDirection = 0;
+      };
+
+      const refreshGestureIdleTimer = () => {
+        clearGestureIdleTimer();
+        gestureIdleTimer = window.setTimeout(() => {
+          resetGestureState();
+          gestureIdleTimer = null;
+        }, STEP_CONFIG.GESTURE_IDLE_MS);
+      };
+
+      const resetGestureSession = () => {
+        gestureSessionActive = false;
+        gestureSessionConsumed = false;
+        clearGestureSessionIdleTimer();
+      };
+
+      const refreshGestureSessionIdleTimer = () => {
+        clearGestureSessionIdleTimer();
+        gestureSessionIdleTimer = window.setTimeout(() => {
+          resetGestureSession();
+          resetGestureState();
+          gestureSessionIdleTimer = null;
+        }, STEP_CONFIG.SESSION_IDLE_MS);
+      };
+
+      const startEntryLock = () => {
+        entryLockActive = true;
+        clearEntryLockIdleTimer();
+      };
+
+      const refreshEntryLockIdleTimer = () => {
+        clearEntryLockIdleTimer();
+        entryLockIdleTimer = window.setTimeout(() => {
+          entryLockActive = false;
+          entryLockIdleTimer = null;
+        }, STEP_CONFIG.ENTRY_LOCK_IDLE_MS);
+      };
+
+      const anchorInsidePin = (direction: 1 | -1) => {
+        if (!pinTrigger) return;
+        if (direction > 0) {
+          if (Math.abs(window.scrollY - pinTrigger.start) > STEP_CONFIG.ANCHOR_TOLERANCE_PX) {
+            pinTrigger.scroll(pinTrigger.start + STEP_CONFIG.ANCHOR_OFFSET_PX);
+          }
+          return;
+        }
+        if (Math.abs(window.scrollY - pinTrigger.end) > STEP_CONFIG.ANCHOR_TOLERANCE_PX) {
+          pinTrigger.scroll(pinTrigger.end - STEP_CONFIG.ANCHOR_OFFSET_PX);
+        }
+      };
 
       const setHighlight = (index: number) => {
         overlayRefs.current.forEach((overlay, overlayIndex) => {
           if (!overlay) return;
-          gsap.set(overlay, { opacity: overlayIndex === index ? 1 : 0 });
+          gsap.to(overlay, {
+            autoAlpha: overlayIndex === index ? 1 : 0,
+            duration: STEP_CONFIG.HIGHLIGHT_FADE_DURATION,
+            ease: "power1.out",
+            overwrite: true
+          });
         });
       };
 
-      gsap.set(trackRef.current, { x: () => getMetrics().startOffset });
+      const applyStepImmediate = (step: StepIndex) => {
+        if (!trackRef.current) return;
+        currentStep = step;
+        isAnimating = false;
+        trackTween?.kill();
+        trackTween = null;
+        gsap.set(trackRef.current, { x: getStepX(step, metrics) });
+        overlayRefs.current.forEach((overlay, overlayIndex) => {
+          if (!overlay) return;
+          gsap.set(overlay, { autoAlpha: overlayIndex === step ? 1 : 0 });
+        });
+      };
 
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: viewportRef.current,
-          start: "top top",
-          end: () => `+=${getMetrics().totalDistance}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onRefreshInit: () => {
-            if (!trackRef.current) return;
-            const { startOffset } = getMetrics();
-            gsap.set(trackRef.current, { x: startOffset });
-            setHighlight(0);
+      const animateToStep = (step: StepIndex) => {
+        if (!trackRef.current) return;
+        if (step === currentStep) return;
+
+        const targetX = getStepX(step, metrics);
+        const currentX = Number(gsap.getProperty(trackRef.current, "x")) || 0;
+        const shouldMoveTrack = Math.abs(targetX - currentX) > 0.5;
+
+        currentStep = step;
+        setHighlight(step);
+
+        if (!shouldMoveTrack) {
+          gsap.set(trackRef.current, { x: targetX });
+          return;
+        }
+
+        isAnimating = true;
+        trackTween?.kill();
+        trackTween = gsap.to(trackRef.current, {
+          x: targetX,
+          duration: STEP_CONFIG.TRACK_MOVE_DURATION,
+          ease: "power2.out",
+          overwrite: true,
+          onComplete: () => {
+            isAnimating = false;
+            trackTween = null;
           }
+        });
+      };
+
+      const releasePin = (direction: 1 | -1) => {
+        if (!pinTrigger) return;
+        isIntentionalRelease = true;
+        gestureSessionConsumed = true;
+        isPinnedActive = false;
+        isAnimating = false;
+        trackTween?.kill();
+        trackTween = null;
+        resetGestureState();
+        resetGestureSession();
+        clearEntryLockIdleTimer();
+        entryLockActive = false;
+        clearGestureIdleTimer();
+        cooldownUntil = Date.now() + STEP_CONFIG.SESSION_COOLDOWN_MS;
+        const targetScroll = direction > 0 ? pinTrigger.end + 2 : pinTrigger.start - 2;
+        pinTrigger.scroll(targetScroll);
+      };
+
+      const handleStepTransition = (direction: 1 | -1) => {
+        if (direction > 0) {
+          if (currentStep === LAST_STEP) {
+            releasePin(1);
+            return;
+          }
+          animateToStep((currentStep + 1) as StepIndex);
+          return;
+        }
+
+        if (currentStep === 0) {
+          releasePin(-1);
+          return;
+        }
+        animateToStep((currentStep - 1) as StepIndex);
+      };
+
+      const processGestureDelta = (delta: number, threshold: number) => {
+        if (!isPinnedActive) return;
+        if (delta === 0) return;
+        if (entryLockActive) return;
+
+        if (!gestureSessionActive) {
+          gestureSessionActive = true;
+          gestureSessionConsumed = false;
+        }
+
+        refreshGestureSessionIdleTimer();
+
+        if (gestureSessionConsumed) return;
+
+        const now = Date.now();
+        if (isAnimating || now < cooldownUntil) {
+          resetGestureState();
+          refreshGestureIdleTimer();
+          return;
+        }
+
+        const direction: 1 | -1 = delta > 0 ? 1 : -1;
+        if (gestureDirection !== 0 && gestureDirection !== direction) {
+          gestureAccumulator = 0;
+        }
+        gestureDirection = direction;
+        gestureAccumulator += Math.abs(delta);
+        refreshGestureIdleTimer();
+
+        if (gestureAccumulator < threshold) {
+          return;
+        }
+
+        gestureAccumulator = 0;
+        gestureDirection = 0;
+        gestureSessionConsumed = true;
+        cooldownUntil = now + STEP_CONFIG.SESSION_COOLDOWN_MS;
+        handleStepTransition(direction);
+      };
+
+      const handleWheel = (event: WheelEvent) => {
+        if (!isPinnedActive) return;
+        event.preventDefault();
+        if (entryLockActive) {
+          refreshEntryLockIdleTimer();
+          return;
+        }
+        processGestureDelta(event.deltaY, STEP_CONFIG.WHEEL_THRESHOLD_PX);
+      };
+
+      const handleTouchStart = (event: TouchEvent) => {
+        touchStartY = event.touches[0]?.clientY ?? 0;
+        resetGestureState();
+      };
+
+      const handleTouchMove = (event: TouchEvent) => {
+        if (!isPinnedActive) return;
+        event.preventDefault();
+        if (entryLockActive) {
+          refreshEntryLockIdleTimer();
+          return;
+        }
+
+        const currentY = event.touches[0]?.clientY ?? touchStartY;
+        const delta = touchStartY - currentY;
+        touchStartY = currentY;
+        processGestureDelta(delta, STEP_CONFIG.TOUCH_THRESHOLD_PX);
+      };
+
+      pinTrigger = ScrollTrigger.create({
+        trigger: viewportRef.current,
+        start: "top top",
+        end: () => `+=${Math.round(window.innerHeight * STEP_CONFIG.PIN_DISTANCE_FACTOR)}`,
+        pin: true,
+        pinSpacing: true,
+        invalidateOnRefresh: true,
+        onEnter: () => {
+          isPinnedActive = true;
+          startEntryLock();
+          refreshEntryLockIdleTimer();
+          cooldownUntil = Date.now() + STEP_CONFIG.SESSION_COOLDOWN_MS;
+          resetGestureSession();
+          resetGestureState();
+          applyStepImmediate(0);
+          anchorInsidePin(1);
+        },
+        onEnterBack: () => {
+          isPinnedActive = true;
+          startEntryLock();
+          refreshEntryLockIdleTimer();
+          cooldownUntil = Date.now() + STEP_CONFIG.SESSION_COOLDOWN_MS;
+          resetGestureSession();
+          resetGestureState();
+          applyStepImmediate(LAST_STEP);
+          anchorInsidePin(-1);
+        },
+        onLeave: () => {
+          isPinnedActive = false;
+          isIntentionalRelease = false;
+          entryLockActive = false;
+          clearEntryLockIdleTimer();
+          resetGestureSession();
+          resetGestureState();
+          clearGestureIdleTimer();
+        },
+        onLeaveBack: () => {
+          isPinnedActive = false;
+          isIntentionalRelease = false;
+          entryLockActive = false;
+          clearEntryLockIdleTimer();
+          resetGestureSession();
+          resetGestureState();
+          clearGestureIdleTimer();
+        },
+        onRefreshInit: () => {
+          metrics = getMetrics();
+        },
+        onRefresh: () => {
+          metrics = getMetrics();
+          applyStepImmediate(currentStep);
         }
       });
 
-      timeline.call(() => setHighlight(0), [], 0);
-      timeline.to(trackRef.current, { x: () => getMetrics().startOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(1));
-      timeline.to(trackRef.current, {
-        x: () => getMetrics().startOffset - getMetrics().cardStep,
-        duration: 1,
-        ease: "none"
-      });
-      timeline.call(() => setHighlight(2));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(3));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(4));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
+      applyStepImmediate(0);
+
+      window.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
       const handleViewportChange = () => {
         if (resizeTimer) {
@@ -202,9 +500,22 @@ export default function ModellSection() {
         if (resizeTimer) {
           window.clearTimeout(resizeTimer);
         }
+        clearEntryLockIdleTimer();
+        clearGestureSessionIdleTimer();
+        clearGestureIdleTimer();
+        trackTween?.kill();
+        trackTween = null;
+        pinTrigger?.kill();
+        pinTrigger = null;
+        entryLockActive = false;
+        gestureSessionActive = false;
+        gestureSessionConsumed = false;
+        isIntentionalRelease = false;
+        window.removeEventListener("wheel", handleWheel);
+        window.removeEventListener("touchstart", handleTouchStart);
+        window.removeEventListener("touchmove", handleTouchMove);
         window.removeEventListener("resize", handleViewportChange);
         window.removeEventListener("orientationchange", handleViewportChange);
-        timeline.kill();
       };
     });
 
@@ -218,7 +529,7 @@ export default function ModellSection() {
 
       overlayRefs.current.forEach((overlay) => {
         if (!overlay) return;
-        gsap.set(overlay, { opacity: 0 });
+        gsap.set(overlay, { autoAlpha: 0 });
       });
     });
 
@@ -287,7 +598,7 @@ export default function ModellSection() {
                   ref={(el) => {
                     overlayRefs.current[index] = el;
                   }}
-                  className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
+                  className="absolute inset-0 opacity-0 bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
                 />
                 <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px] lg:h-20 lg:w-20">
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-4">
