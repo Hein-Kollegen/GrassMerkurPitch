@@ -77,6 +77,17 @@ const timelineCards = [
   }
 ];
 
+type TimelineMetrics = {
+  startOffset: number;
+  endOffset: number;
+  cardWidth: number;
+  gap: number;
+  cardStep: number;
+  travel: number;
+};
+
+type Stage = 0 | 1 | 2 | 3 | 4;
+
 export default function ModellSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -96,7 +107,7 @@ export default function ModellSection() {
         cardWidth: 0,
         gap: 24,
         cardStep: 0,
-        totalDistance: 0
+        travel: 0
       };
     }
 
@@ -105,9 +116,7 @@ export default function ModellSection() {
     const startOffset = (viewportWidth - (3 * cardWidth + 2 * gap)) / 2;
     const endOffset = startOffset - (2 * (cardWidth + gap));
     const cardStep = cardWidth + gap;
-    const moveDistance = Math.abs(endOffset - startOffset);
-    const stepLength = moveDistance / 2;
-    const totalDistance = stepLength * 5;
+    const travel = Math.abs(endOffset - startOffset);
 
     return {
       startOffset,
@@ -115,7 +124,7 @@ export default function ModellSection() {
       cardWidth,
       gap,
       cardStep,
-      totalDistance
+      travel
     };
   };
 
@@ -127,54 +136,111 @@ export default function ModellSection() {
     const mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      const { cardWidth } = getMetrics();
-      if (!cardWidth || !trackRef.current || !viewportRef.current) return;
+      const initialMetrics = getMetrics();
+      if (!initialMetrics.cardWidth || !trackRef.current || !viewportRef.current) return;
 
       let resizeTimer: number | null = null;
       let lastViewportWidth = window.innerWidth;
       let lastViewportHeight = window.innerHeight;
+      let metrics: TimelineMetrics = initialMetrics;
+      let activeHighlightIndex = -1;
+      let lastProgress = 0;
+      let trigger: ScrollTrigger | null = null;
 
-      const setHighlight = (index: number) => {
+      const getStageFromProgress = (progress: number): Stage => {
+        const points = [0, 0.25, 0.5, 0.75, 1] as const;
+        let nearestIndex: Stage = 0;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        points.forEach((point, index) => {
+          const distance = Math.abs(progress - point);
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index as Stage;
+          }
+        });
+        return nearestIndex;
+      };
+
+      const getHighlightIndexFromStage = (stage: Stage) => {
+        return stage;
+      };
+
+      const setHighlight = (index: number, immediate = false) => {
+        if (!immediate && index === activeHighlightIndex) return;
+        activeHighlightIndex = index;
         overlayRefs.current.forEach((overlay, overlayIndex) => {
           if (!overlay) return;
-          gsap.set(overlay, { opacity: overlayIndex === index ? 1 : 0 });
+          gsap.to(overlay, {
+            autoAlpha: overlayIndex === index ? 1 : 0,
+            duration: immediate ? 0 : 0.2,
+            ease: "power1.out",
+            overwrite: true
+          });
         });
       };
 
-      gsap.set(trackRef.current, { x: () => getMetrics().startOffset });
+      const setTrackFromProgress = (progress: number) => {
+        if (!trackRef.current) return;
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        let x = metrics.startOffset;
 
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: viewportRef.current,
-          start: "top top",
-          end: () => `+=${getMetrics().totalDistance}`,
-          scrub: true,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onRefreshInit: () => {
-            if (!trackRef.current) return;
-            const { startOffset } = getMetrics();
-            gsap.set(trackRef.current, { x: startOffset });
-            setHighlight(0);
-          }
+        if (clampedProgress <= 0.25) {
+          x = metrics.startOffset;
+        } else if (clampedProgress <= 0.5) {
+          const segmentProgress = (clampedProgress - 0.25) / 0.25;
+          x = metrics.startOffset - metrics.cardStep * segmentProgress;
+        } else if (clampedProgress <= 0.75) {
+          const segmentProgress = (clampedProgress - 0.5) / 0.25;
+          const midOffset = metrics.startOffset - metrics.cardStep;
+          x = midOffset + (metrics.endOffset - midOffset) * segmentProgress;
+        } else {
+          x = metrics.endOffset;
+        }
+
+        gsap.set(trackRef.current, { x });
+      };
+
+      gsap.set(trackRef.current, { x: metrics.startOffset });
+      setTrackFromProgress(0);
+      setHighlight(0, true);
+
+      trigger = ScrollTrigger.create({
+        trigger: viewportRef.current,
+        start: "top top",
+        end: () => {
+          metrics = getMetrics();
+          const pinDistance = Math.round(Math.max(window.innerHeight * 1.2, metrics.travel * 2.8));
+          return `+=${pinDistance}`;
+        },
+        scrub: 0.5,
+        snap: {
+          snapTo: [0, 0.25, 0.5, 0.75, 1],
+          directional: true,
+          inertia: false,
+          delay: 0,
+          duration: { min: 0.1, max: 0.2 },
+          ease: "power2.out"
+        },
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          lastProgress = self.progress;
+          setTrackFromProgress(lastProgress);
+          setHighlight(getHighlightIndexFromStage(getStageFromProgress(lastProgress)));
+        },
+        onRefreshInit: () => {
+          metrics = getMetrics();
+          setTrackFromProgress(lastProgress);
+          setHighlight(getHighlightIndexFromStage(getStageFromProgress(lastProgress)), true);
+        },
+        onRefresh: (self) => {
+          metrics = getMetrics();
+          lastProgress = self.progress;
+          setTrackFromProgress(lastProgress);
+          setHighlight(getHighlightIndexFromStage(getStageFromProgress(lastProgress)), true);
         }
       });
-
-      timeline.call(() => setHighlight(0), [], 0);
-      timeline.to(trackRef.current, { x: () => getMetrics().startOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(1));
-      timeline.to(trackRef.current, {
-        x: () => getMetrics().startOffset - getMetrics().cardStep,
-        duration: 1,
-        ease: "none"
-      });
-      timeline.call(() => setHighlight(2));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(3));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
-      timeline.call(() => setHighlight(4));
-      timeline.to(trackRef.current, { x: () => getMetrics().endOffset, duration: 1, ease: "none" });
 
       const handleViewportChange = () => {
         if (resizeTimer) {
@@ -204,7 +270,8 @@ export default function ModellSection() {
         }
         window.removeEventListener("resize", handleViewportChange);
         window.removeEventListener("orientationchange", handleViewportChange);
-        timeline.kill();
+        trigger?.kill();
+        trigger = null;
       };
     });
 
@@ -218,7 +285,7 @@ export default function ModellSection() {
 
       overlayRefs.current.forEach((overlay) => {
         if (!overlay) return;
-        gsap.set(overlay, { opacity: 0 });
+        gsap.set(overlay, { autoAlpha: 0 });
       });
     });
 
@@ -287,7 +354,7 @@ export default function ModellSection() {
                   ref={(el) => {
                     overlayRefs.current[index] = el;
                   }}
-                  className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
+                  className="absolute inset-0 opacity-0 bg-[linear-gradient(90deg,#082940_0%,#080716_100%)]"
                 />
                 <div className="absolute right-4 top-4 z-[1] h-16 w-16 rounded-full bg-gradient-to-b from-[#DBC18D]/40 to-transparent p-[1px] lg:h-20 lg:w-20">
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-[#080716] p-4">
