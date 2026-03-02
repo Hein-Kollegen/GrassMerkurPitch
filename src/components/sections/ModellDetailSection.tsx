@@ -14,7 +14,7 @@ const detailSlides = [
     title: "S1 – STRATEGIE & MARKE",
     subline: "Fundament schaffen, bevor Maßnahmen starten.",
     mediaType: "videoLeft",
-    mediaSrc: "/assets/sections/modell-detail/video-mock-up 1_1.mp4",
+    mediaSrc: "/assets/sections/modell-detail/Martin 1X1 - Clean 28RF - kompimiert.mp4",
     body: "Hier entsteht Klarheit. Ohne sie wird Wachstum beliebig und zufällig.",
     list: [
       "Bestandsaufnahme Marketing- & Vertriebssystem",
@@ -29,9 +29,8 @@ const detailSlides = [
   {
     title: "S2 – SICHTBARKEIT",
     subline: "Relevanz in Entscheidungsphasen aufbauen.",
-    mediaType: "video",
-    mediaSrc: "/assets/sections/modell-detail/section 2 video.mp4",
-    panelStyle: "overlay",
+    mediaType: "videoLeft",
+    mediaSrc: "/assets/sections/modell-detail/video-mock-up 1_1.mp4",
     body: "Nicht Reichweite ist das Ziel – sondern Wahrnehmung bei den richtigen Entscheidern.",
     list: [
       "SEO & GEO (inkl. Nischen wie „Lift & Shift“)",
@@ -496,6 +495,7 @@ export default function ModellDetailSection() {
           className="relative w-full flex flex-col gap-10 lg:block lg:h-[100svh] lg:w-[100vw] lg:overflow-hidden"
         >
           {detailSlides.map((slide, index) => {
+            const isSlideOne = index === 0;
             const isBackgroundVideo = slide.mediaType === "video";
             const panelClass =
               slide.mediaType === "video"
@@ -539,18 +539,28 @@ export default function ModellDetailSection() {
                       <div className="grid h-full grid-rows-[250px_auto] lg:grid-cols-2 lg:grid-rows-1">
                         <div
                           className={
-                            "relative h-[250px] w-full overflow-hidden lg:h-[90%] " +
+                            "relative min-h-[250px] w-full overflow-hidden lg:h-full " +
                             (isBackgroundVideo ? "block lg:hidden" : "")
                           }
                         >
-                          {slide.mediaType === "videoLeft" || slide.mediaType === "video" ? (
+                          {slide.mediaType === "videoLeft" ? (
+                            <div className={"h-full w-full " + (isSlideOne ? "" : "lg:py-4")}>
+                              <video
+                                className={
+                                  "h-full w-full object-cover " +
+                                  (isSlideOne ? "" : "lg:object-contain lg:object-left")
+                                }
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                src={slide.mediaSrc}
+                              />
+                            </div>
+                          ) : null}
+                          {slide.mediaType === "video" ? (
                             <video
-                              className={
-                                "h-full w-full object-cover " +
-                                (slide.mediaType === "videoLeft"
-                                  ? "lg:object-contain lg:object-left"
-                                  : "")
-                              }
+                              className="h-full w-full object-cover"
                               autoPlay
                               loop
                               muted
