@@ -7,7 +7,7 @@ import { Section } from "@/components/layout/Section";
 const works = [
   {
     title: "Redaktionsplanung",
-    image: "/assets/sections/works/board.png",
+    image: "/assets/sections/works/Image20260302152602.png",
     href: "https://trello.com/b/f6oeLRwE/grass-merkur-social-media"
   },
   {
@@ -89,5 +89,4 @@ export default function WorksSection() {
     </Section>
   );
 }
-
 
